@@ -99,13 +99,6 @@ namespace Greathorn
 						break;
 				}
 
-				// Symlinks
-				Log.WriteLine("Symlinks", ILogOutput.LogType.Notice);
-                string rootEditorConfig = Path.Combine(workspaceRoot, "Greathorn", "Programs", "EditorConfig", ".editorconfig");
-                string programsEditorConfig = Path.Combine(workspaceRoot, "Greathorn", "Source", "Programs", ".editorconfig");
-                Symlink(rootEditorConfig, programsEditorConfig);
-              
-
 				Log.WriteLine("Setup Unreal Engine", ILogOutput.LogType.Notice);
 				switch (framework.Platform.OperatingSystem)
 				{
