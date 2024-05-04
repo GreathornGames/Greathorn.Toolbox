@@ -79,27 +79,27 @@ namespace Greathorn.Core.Utils
 			return attributes & ~attributesToRemove;
 		}
 
-		public static string? GetPathWithCorrectCase(this FileInfo InInfo)
+		public static string? GetPathWithCorrectCase(this FileInfo info)
 		{
-			DirectoryInfo parentInfo = InInfo.Directory;
+			DirectoryInfo parentInfo = info.Directory;
 			return parentInfo != null
 				? Path.Combine(GetPathWithCorrectCase(parentInfo),
-					InInfo.Exists ? parentInfo.GetFiles(InInfo.Name)[0].Name : InInfo.Name)
+					info.Exists ? parentInfo.GetFiles(info.Name)[0].Name : info.Name)
 				: null;
 		}
 
-		public static string GetPathWithCorrectCase(this DirectoryInfo InInfo)
+		public static string GetPathWithCorrectCase(this DirectoryInfo info)
 		{
-			DirectoryInfo parentInfo = InInfo.Parent;
+			DirectoryInfo parentInfo = info.Parent;
 			return parentInfo == null
-				? InInfo.FullName.ToUpperInvariant()
+				? info.FullName.ToUpperInvariant()
 				: Path.Combine(GetPathWithCorrectCase(parentInfo),
-					InInfo.Exists ? parentInfo.GetDirectories(InInfo.Name)[0].Name : InInfo.Name);
+					info.Exists ? parentInfo.GetDirectories(info.Name)[0].Name : info.Name);
 		}
 
-		public static MemoryStream? GetMemoryStream(this string FilePath)
+		public static MemoryStream? GetMemoryStream(this string filePath)
 		{
-			return File.Exists(FilePath) ? new MemoryStream(File.ReadAllBytes(FilePath)) : null;
+			return File.Exists(filePath) ? new MemoryStream(File.ReadAllBytes(filePath)) : null;
 		}
 
 		public static string FixDirectorySeparator(this string filePath)

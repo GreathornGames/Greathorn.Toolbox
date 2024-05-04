@@ -84,7 +84,7 @@ namespace Greathorn
 
         static void Clone()
         {
-            if(s_WorkspaceRoot==null)
+            if (s_WorkspaceRoot == null)
             {
                 return;
             }
@@ -93,15 +93,24 @@ namespace Greathorn
             {
                 Directory.CreateDirectory(cliSource);
             }
-            Helpers.CheckoutRepo("https://github.com/GreathornGames/Greythorne.git", Path.Combine(cliSource, "Greathorn.CLI"));
+            string checkoutPath = Path.Combine(cliSource, "Greathorn.CLI");
+            if (Directory.Exists(Path.Combine(checkoutPath, ".git")))
+            {
+                Helpers.UpdateRepo(checkoutPath);
+            }
+            else
+            {
+                Helpers.CheckoutRepo("https://github.com/GreathornGames/Greathorn.CLI.git", checkoutPath);
+            }
         }
 
         static void Build()
         {
             if (!s_ShouldBuild || s_WorkspaceRoot == null) return;
 
-            string programsFolder = Path.Combine(s_WorkspaceRoot, "Greathorn", "Source", "Programs");
-            string sharedFolder = Path.Combine(s_WorkspaceRoot, "Greathorn", "Source", "Programs", "Shared");
+            string programsFolder = Path.Combine(s_WorkspaceRoot, "Greathorn", "Source", "Programs", "Greathorn.CLI");
+            string sharedFolder = Path.Combine(programsFolder, "Shared");
+
             Console.WriteLine($"Programs Folder @ {programsFolder}");
 
             // Find all projects, exclude Shared and Bootstrap

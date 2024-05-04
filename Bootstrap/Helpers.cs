@@ -211,7 +211,7 @@ namespace Greathorn
             {
                 executablePath = "git";
             }            
-            StringBuilder commandLineBuilder = new StringBuilder();
+            StringBuilder commandLineBuilder = new();
             commandLineBuilder.Append("clone ");
 
             if (branch != null)
@@ -234,7 +234,7 @@ namespace Greathorn
             }
 
             Console.WriteLine($"{commandLineBuilder}{uri} {checkoutFolder}");
-            Execute(executablePath, Directory.GetParent(checkoutFolder),
+            Execute(executablePath, s_CachedWorkspaceRoot,
                 $"{commandLineBuilder}{uri} {checkoutFolder}", null, (System.Action<int, string>)((processIdentifier, line) =>
                 {
                     Console.WriteLine(line);
@@ -250,6 +250,127 @@ namespace Greathorn
                         Console.WriteLine(line);
                     }));
             }
+        }
+
+        public static void UpdateRepo(string checkoutFolder, string? branch = null, string? commit = null, bool forceUpdate = true)
+        {
+            string executablePath;
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                executablePath = "git.exe";
+            }
+            else
+            {
+                executablePath = "git";
+            }
+            // Check current
+            List<string> output = new List<string>();
+
+            // Get status of the repository
+            Execute(executablePath, checkoutFolder,
+                $"fetch origin", null, (System.Action<int, string>)((processIdentifier, line) =>
+                {
+                    Console.WriteLine(line);
+                }));
+            Execute(executablePath, checkoutFolder,
+                "status -uno --long", null, (System.Action<int, string>)((processIdentifier, line) =>
+                {
+                    Console.WriteLine(line);
+                    output.Add(line);
+                }));
+
+            bool branchBehind = false;
+            bool fastForward = false;
+            bool detached = false;
+            foreach (string s in output)
+            {
+                if (s.Contains("branch is behind"))
+                {
+                    branchBehind = true;
+                }
+
+                if (s.Contains("and can be fast-forwarded"))
+                {
+                    fastForward = true;
+                }
+
+                if (s.Contains("HEAD detached at"))
+                {
+                    detached = true;
+                }
+            }
+
+            if (detached)
+            {
+                Execute(executablePath, checkoutFolder,
+                    $"reset --hard", null, (System.Action<int, string>)((processIdentifier, line) =>
+                    {
+                        Console.WriteLine(line);
+                    }));
+
+                if (branch != null)
+                {
+                    Execute(executablePath, checkoutFolder,
+                        $"switch {branch}", null, (System.Action<int, string>)((processIdentifier, line) =>
+                        {
+                            Console.WriteLine(line);
+                        }));
+                }
+
+                Execute(executablePath, checkoutFolder,
+                    "pull", null, (System.Action<int, string>)((processIdentifier, line) =>
+                    {
+                        Console.WriteLine(line);
+                    }));
+
+                if (commit != null)
+                {
+                    Execute(executablePath, checkoutFolder,
+                        $"checkout {commit}", null, (System.Action<int, string>)((processIdentifier, line) =>
+                        {
+                            Console.WriteLine(line);
+                        }));
+                    Console.WriteLine($"{checkoutFolder} detached updated to {commit}.");
+                }
+                else
+                {
+                    Console.WriteLine($"{checkoutFolder} detached head reset to latest.");
+                }
+            }
+            else if ((!fastForward && branchBehind) || forceUpdate)
+            {
+                // We actually need to do something to upgrade this repository
+                Console.WriteLine($"{checkoutFolder} needs updating, resetting as it could not be cleanly updated.");
+
+                Execute(executablePath, checkoutFolder,
+                    "reset --hard", null, (System.Action<int, string>)((processIdentifier, line) =>
+                    {
+                        Console.WriteLine(line);
+                    }));
+                Execute(executablePath, checkoutFolder,
+                    "pull", null, (System.Action<int, string>)((processIdentifier, line) =>
+                    {
+                        Console.WriteLine(line);
+                    }));
+            }
+            else if (fastForward)
+            {
+                // We actually need to do something to upgrade this repository
+                Console.WriteLine($"Fast-forwarding {checkoutFolder}.");
+
+                Execute(executablePath, checkoutFolder,
+                    "pull", null, (System.Action<int, string>)((processIdentifier, line) =>
+                    {
+                        Console.WriteLine(line);
+                    }));
+            }
+            else
+            {
+                Console.WriteLine($"{checkoutFolder} is up-to-date.");
+            }
+
+            // Clear our cached output
+            output.Clear();
         }
 
     }
