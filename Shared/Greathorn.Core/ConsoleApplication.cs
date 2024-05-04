@@ -35,7 +35,7 @@ namespace Greathorn.Core
 
             // Should we pause on leaving?
             m_ShouldPause = settings.PauseOnExit;
-            if(Arguments.Arguments.Contains("no-pause"))
+            if(Arguments.Arguments.Contains("no-pause") || Arguments.Arguments.Contains("quiet"))
             {
                 m_ShouldPause = false;
             }

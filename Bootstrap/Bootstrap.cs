@@ -6,6 +6,7 @@ namespace Greathorn
 {
     class Bootstrap
     {
+        static bool s_QuietMode = false;
         static bool s_ShouldBuild = true;
         static bool s_ShouldSetupWorkspace = true;
 
@@ -31,7 +32,7 @@ namespace Greathorn
 				}
 				Console.WriteLine($"Using MSBuild @ {visualStudioInstance.MSBuildPath}");
 
-				ParseArguments(args);
+	
 
 				// Find the workspace root
 
@@ -44,6 +45,8 @@ namespace Greathorn
 					return;
 				}
 				Console.WriteLine($"Workspace Root @ {s_WorkspaceRoot}");
+
+                ParseArguments(args);
 
                 Clone();
 				Build();
@@ -60,6 +63,8 @@ namespace Greathorn
 
         static void PressAnyKeyToContinue()
         {
+            if (s_QuietMode) return;
+
             Console.WriteLine("Press Any Key To Continue ...");
             Console.ReadKey();
         }
@@ -78,6 +83,10 @@ namespace Greathorn
                 if (arguments[i] == "no-build")
                 {
                     s_ShouldBuild = false;
+                }
+                if (arguments[i] == "quiet")
+                {
+                    s_QuietMode = true;
                 }
             }
         }
@@ -144,7 +153,12 @@ namespace Greathorn
             if (!s_ShouldSetupWorkspace || s_WorkspaceRoot == null) return;
 
             // We need to run this process elevated, the main executable is bundled to ensure its elevated, but the library is not.
-            Helpers.Elevate("dotnet", s_WorkspaceRoot, $" {Path.Combine(s_WorkspaceRoot, "Greathorn", "Binaries", "DotNET", "WorkspaceSetup.dll")}");
+            string args = Path.Combine(s_WorkspaceRoot, "Greathorn", "Binaries", "DotNET", "WorkspaceSetup.dll");
+            if(s_QuietMode)
+            {
+                args += " quiet";
+            }
+            Helpers.Elevate("dotnet", s_WorkspaceRoot, args);
         }
     }
 }

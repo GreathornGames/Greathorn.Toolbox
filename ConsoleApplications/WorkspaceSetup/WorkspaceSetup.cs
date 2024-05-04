@@ -20,7 +20,6 @@ namespace Greathorn
 
 			try
 			{
-
 				string? workspaceRoot = PerforceUtil.GetWorkspaceRoot();
 				if (workspaceRoot == null)
 				{
