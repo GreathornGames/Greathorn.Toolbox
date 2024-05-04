@@ -19,7 +19,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <IsPublishable>False</IsPublishable>
-    <OutputPath>..\..\..\Binaries\DotNET</OutputPath>
+    <OutputPath>..\..\..\..\..\Binaries\DotNET</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
