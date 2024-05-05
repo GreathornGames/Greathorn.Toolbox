@@ -1,8 +1,11 @@
 // Copyright Greathorn Games Inc. All Rights Reserved.
 
 using System;
+using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
+using Greathorn.Core;
 
 namespace GG
 {
@@ -66,6 +69,31 @@ namespace GG
                             }
                         }
                     }
+                }
+            }
+
+            public void AddHelpOutputToBuilder(StringBuilder builder, int depth = 0)
+            {
+                string indent = string.Empty;
+                for (int i = 0; i < depth; i++)
+                {
+                    indent += "\t";
+                }
+
+                if (!string.IsNullOrEmpty(Command))
+                {                
+                    builder.AppendLine($"{indent}{Description}");
+                }
+
+                if(Children.Count > 0)
+                {
+                    depth++;
+                    foreach(KeyValuePair<string, CommandMapAction> kvp in Children)
+                    {
+                        builder.AppendLine($"{indent}{kvp.Key}");
+                        kvp.Value.AddHelpOutputToBuilder(builder, depth);
+                    }                   
+                    depth--;               
                 }
             }
         }
@@ -138,9 +166,23 @@ namespace GG
         public string GetOutput()
         {
             StringBuilder builder = new StringBuilder();
-
-
             builder.AppendLine("GG Registered Actions");
+            
+            foreach(KeyValuePair<string, CommandMapAction> kvp in m_Map)
+            {
+                builder.AppendLine($"{kvp.Key}");
+
+                // Odd case where a top level command exists
+                if (kvp.Value.Command != null)
+                {
+                    builder.AppendLine($"\t{kvp.Value.Description}");
+                }
+
+                if(kvp.Value.Children.Count > 0)
+                {
+                    kvp.Value.AddHelpOutputToBuilder(builder, 1);
+                }
+            }
 
             return builder.ToString();
         }
