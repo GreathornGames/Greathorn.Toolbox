@@ -47,7 +47,7 @@ namespace Greathorn
                 string[] programFolderCommands = Directory.GetFiles(ggProgramFolder, $"*{Commands.Extension}", SearchOption.TopDirectoryOnly);
                 string[] projectFolderCommands = Directory.GetFiles(settings.ProjectsFolder, $"*{Commands.Extension}", SearchOption.AllDirectories);
 
-                CommandMap map = new CommandMap();
+                CommandMap map = new();
 
                 // Parse Programs
                 int programFolderCommandsCount = programFolderCommands.Length;
@@ -121,7 +121,7 @@ namespace Greathorn
                     }
                     else
                     {
-                        Log.WriteLine($"Unable to find valid command for query `{framework.Arguments.ToString()}`.", "GG", ILogOutput.LogType.Error);
+                        Log.WriteLine($"Unable to find valid command for query `{framework.Arguments}`.", "GG", ILogOutput.LogType.Error);
                     }
                 }
             }

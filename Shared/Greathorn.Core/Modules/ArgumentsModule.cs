@@ -8,7 +8,7 @@ using System.Text;
 namespace Greathorn.Core.Modules
 {	public class ArgumentsModule : IModule
 	{
-		private const string LogCategory = "ARGS";
+		private const string k_LogCategory = "ARGS";
        
 		public readonly List<string> Arguments = new List<string>();
 		public readonly Dictionary<string, string> OverrideArguments = new Dictionary<string, string>();
@@ -100,19 +100,19 @@ namespace Greathorn.Core.Modules
 
 			if (Arguments.Count > 0)
 			{
-				Core.Log.WriteLine("Arguments:", LogCategory, ILogOutput.LogType.Info);
+				Core.Log.WriteLine("Arguments:", k_LogCategory, ILogOutput.LogType.Info);
 				foreach (string s in Arguments)
 				{
-					Core.Log.WriteLine($"\t{s}", LogCategory, ILogOutput.LogType.Info);
+					Core.Log.WriteLine($"\t{s}", k_LogCategory, ILogOutput.LogType.Info);
 				}
 			}
 
 			if (OverrideArguments.Count > 0)
 			{
-				Core.Log.WriteLine("Override Arguments:", LogCategory, ILogOutput.LogType.Info);
+				Core.Log.WriteLine("Override Arguments:", k_LogCategory, ILogOutput.LogType.Info);
 				foreach (KeyValuePair<string, string> pair in OverrideArguments)
 				{
-					Core.Log.WriteLine($"\t{pair.Key}={pair.Value}", LogCategory, ILogOutput.LogType.Info);
+					Core.Log.WriteLine($"\t{pair.Key}={pair.Value}", k_LogCategory, ILogOutput.LogType.Info);
 				}
 			}
 		}

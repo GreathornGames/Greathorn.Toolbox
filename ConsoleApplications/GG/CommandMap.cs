@@ -11,7 +11,7 @@ namespace GG
 {
     public class CommandMap
     {
-        Dictionary<string, CommandMapAction> m_Map = new Dictionary<string, CommandMapAction>();
+        readonly Dictionary<string, CommandMapAction> m_Map = [];
 
         public class CommandMapAction
         {
@@ -20,7 +20,7 @@ namespace GG
             public string? WorkingDirectory;
             public string? Arguments;
 
-            public Dictionary<string, CommandMapAction> Children = new Dictionary<string, CommandMapAction>();
+            public Dictionary<string, CommandMapAction> Children = [];
 
             public CommandMapAction(Commands.CommandVerb action)
             {
@@ -38,13 +38,13 @@ namespace GG
                         Commands.CommandVerb childAction = action.Actions[i];
                         if (childAction.Identifier != null)
                         {
-                            if (!Children.ContainsKey(childAction.Identifier))
+                            if (!Children.TryGetValue(childAction.Identifier, out CommandMapAction? value))
                             {
                                Children.Add(childAction.Identifier, new CommandMapAction(childAction));
                             }
                             else
                             {
-                                Children[childAction.Identifier].Append(childAction);
+                               value.Append(childAction);
                             }
                         }
                     }
@@ -66,13 +66,13 @@ namespace GG
                         Commands.CommandVerb childAction = action.Actions[i];
                         if (childAction.Identifier != null)
                         {
-                            if (!Children.ContainsKey(childAction.Identifier))
+                            if (!Children.TryGetValue(childAction.Identifier, out CommandMapAction? value))
                             {
                                 Children.Add(childAction.Identifier, new CommandMapAction(childAction));
                             }
                             else
                             {
-                                Children[childAction.Identifier].Append(childAction);
+                                value.Append(childAction);
                             }
                         }
                     }
@@ -104,13 +104,13 @@ namespace GG
                 Commands.CommandVerb action = commands.Actions[i];
                 if(action.Identifier != null)
                 {
-                    if (!m_Map.ContainsKey(action.Identifier))
+                    if (!m_Map.TryGetValue(action.Identifier, out CommandMapAction? value))
                     {
                         m_Map.Add(action.Identifier, new CommandMapAction(action));
                     }
                     else
                     {
-                        m_Map[action.Identifier].Append(action);
+                        value.Append(action);
                     }
                 }            
             }
@@ -125,9 +125,9 @@ namespace GG
             // Early out
             if (partCount == 1)
             {
-                if (m_Map.ContainsKey(parts[0]))
+                if (m_Map.TryGetValue(parts[0], out CommandMapAction? found))
                 {
-                    return m_Map[parts[0]];
+                    return found;
                 }
                 else
                 {
@@ -137,18 +137,18 @@ namespace GG
 
             // Find right base
             CommandMapAction? currentActionMap = null;
-            if (m_Map.ContainsKey(parts[0]))
+            if (m_Map.TryGetValue(parts[0], out CommandMapAction? value))
             {
-                currentActionMap = m_Map[parts[0]];
+                currentActionMap = value;
             }
             if (currentActionMap == null) return null;
             depth++;
 
             while (depth < partCount)
             {
-                if(currentActionMap.Children.ContainsKey(parts[depth]))
+                if (currentActionMap.Children.TryGetValue(parts[depth], out CommandMapAction? found))
                 {
-                    currentActionMap = currentActionMap.Children[parts[depth]];
+                    currentActionMap = found;
                     depth++;
                 }
 
@@ -163,7 +163,7 @@ namespace GG
 
         public string GetOutput()
         {
-            List<HelpCommand> commands = new List<HelpCommand>();
+            List<HelpCommand> commands = [];
             foreach(KeyValuePair<string, CommandMapAction> kvp in m_Map)
             {
                 // Odd case where a top level command exists
@@ -179,7 +179,7 @@ namespace GG
                 }
             }
 
-            StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new();
             builder.AppendLine("GG Registered Actions");
             builder.AppendLine();
 
@@ -203,16 +203,10 @@ namespace GG
             return builder.ToString();
         }
 
-        public struct HelpCommand
+        public struct HelpCommand(string command, string? description)
         {
-            public string Command;
-            public string? Description;
-
-            public HelpCommand(string command, string? description)
-            {
-                Command = command;
-                Description = description;
-            }
+            public string Command = command;
+            public string? Description = description;
         }
     }
 }
