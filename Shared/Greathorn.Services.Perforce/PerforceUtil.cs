@@ -8,7 +8,6 @@ namespace Greathorn.Services.Perforce
 	public static class PerforceUtil
 	{
         static readonly int k_CachedGenerateProjectFilesHash = "GenerateProjectFiles.bat".GetStableUpperCaseHashCode();
-        static readonly int k_CachedP4IgnoreHash = "p4ignore.txt".GetStableUpperCaseHashCode();
         static readonly int k_CachedSetupHash = "Setup.bat".GetStableUpperCaseHashCode();
         static string? s_CachedWorkspaceRoot = null;
 
@@ -38,11 +37,6 @@ namespace Greathorn.Services.Perforce
                     foundCount++;
                 }
 
-                if (fileNameHash == k_CachedP4IgnoreHash)
-                {
-                    foundCount++;
-                }
-
                 if (fileNameHash == k_CachedSetupHash)
                 {
                     foundCount++;
@@ -50,7 +44,7 @@ namespace Greathorn.Services.Perforce
             }
 
             // We know this is the root based on found files
-            if(foundCount == 3)
+            if(foundCount == 2)
             {
                 s_CachedWorkspaceRoot = workingDirectory;
                 return s_CachedWorkspaceRoot;

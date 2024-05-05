@@ -75,7 +75,7 @@ namespace Greathorn
 
             for (int i = 0; i < count; i++)
             {
-                if (arguments[i] == "no-setupworkspace")
+                if (arguments[i] == "no-workspace")
                 {
                     s_ShouldSetupWorkspace = false;
                 }
