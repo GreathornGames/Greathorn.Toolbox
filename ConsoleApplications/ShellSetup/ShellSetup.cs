@@ -41,10 +41,10 @@ namespace Greathorn
 				Environment.SetEnvironmentVariable("COMPUTERNAME", System.Environment.MachineName);
 
                 // Add DotNET to path
-                string? existingPath = Environment.GetEnvironmentVariable("PATH");
+                string? existingPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process);
                 if (existingPath == null || !existingPath.Contains(settings.GreathornDotNETFolder))
                 {                   
-                    Environment.SetEnvironmentVariable("PATH", $@"{existingPath};{settings.GreathornDotNETFolder};");
+                    Environment.SetEnvironmentVariable("PATH", $@"{existingPath};{settings.GreathornDotNETFolder}\;", EnvironmentVariableTarget.Process);
                 }
 
 				// P4 Config
