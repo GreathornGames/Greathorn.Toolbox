@@ -37,7 +37,7 @@ namespace Greathorn
                 Log.AddLogOutput(new FileLogOutput(Path.Combine(settings.LogsFolder, "WorkspaceSetup.log")));
                 settings.Output();
 
-                if(UpdateSourceCode(settings))
+                if(UpdateSourceCode(framework, settings))
                 {
                     ProcessUtil.SpawnSeperate("dotnet", settings.BoostrapLibrary);
                     return;
@@ -57,8 +57,14 @@ namespace Greathorn
         }
 
         #region Process
-        static bool UpdateSourceCode(SettingsProvider settings)
+        static bool UpdateSourceCode(ConsoleApplication framework, SettingsProvider settings)
         {
+            if(framework.Arguments.Arguments.Contains("no-source"))
+            {
+                Log.WriteLine("Skipping Source Check (Argument) ...", "SOURCE", ILogOutput.LogType.Default);
+                return true;
+            }
+
             string? branch = GitProvider.GetBranch(settings.CLISourceFolder);
             if (branch == null)
             {
@@ -171,34 +177,34 @@ namespace Greathorn
         }
         #endregion
 
-        static bool Symlink(string source, string target, bool deleteInPlace = true)
-        {
-            // Do we want to delete the in-place file because it could have been a copy instead of a symlink
-            if (deleteInPlace)
-            {
-                FileUtil.ForceDeleteFile(target);
-            }
+        //static bool Symlink(string source, string target, bool deleteInPlace = true)
+        //{
+        //    // Do we want to delete the in-place file because it could have been a copy instead of a symlink
+        //    if (deleteInPlace)
+        //    {
+        //        FileUtil.ForceDeleteFile(target);
+        //    }
 
-            if(File.Exists(target) && !deleteInPlace)
-            {
-                Log.WriteLine($"Unable to symlink {source}->{target} as a file already exists at that location.", "SYMLINK", ILogOutput.LogType.Error);
-                return false;
-            }
-            else
-            {
-                Log.WriteLine($"Symlink {source}->{target} ...", "SYMLINK", ILogOutput.LogType.Default);
-                try
-                {
-                    File.CreateSymbolicLink(target, source);
-                    Log.WriteLine($"Created.", "SYMLINK", ILogOutput.LogType.Default);
-                }
-                catch (IOException)
-                {
-                    Log.WriteLine("An exception occurred, falling back to simply copying the file.", "SYMLINK", ILogOutput.LogType.Info);
-                    File.Copy(source, target);
-                }
-                return true;
-            }
-        }
+        //    if(File.Exists(target) && !deleteInPlace)
+        //    {
+        //        Log.WriteLine($"Unable to symlink {source}->{target} as a file already exists at that location.", "SYMLINK", ILogOutput.LogType.Error);
+        //        return false;
+        //    }
+        //    else
+        //    {
+        //        Log.WriteLine($"Symlink {source}->{target} ...", "SYMLINK", ILogOutput.LogType.Default);
+        //        try
+        //        {
+        //            File.CreateSymbolicLink(target, source);
+        //            Log.WriteLine($"Created.", "SYMLINK", ILogOutput.LogType.Default);
+        //        }
+        //        catch (IOException)
+        //        {
+        //            Log.WriteLine("An exception occurred, falling back to simply copying the file.", "SYMLINK", ILogOutput.LogType.Info);
+        //            File.Copy(source, target);
+        //        }
+        //        return true;
+        //    }
+        //}
     }
 }
