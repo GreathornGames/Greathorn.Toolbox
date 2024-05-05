@@ -19,6 +19,8 @@ namespace Greathorn
         const int k_AsciiLowerCaseStart = 97;
         const int k_AsciiLowerCaseEnd = 122;
 
+        const string k_BuildInfo = "GG_BUILD_SHA";
+
         static readonly int k_CachedGenerateProjectFilesHash = "GenerateProjectFiles.bat".GetStableUpperCaseHashCode();
         static readonly int k_CachedSetupHash = "Setup.bat".GetStableUpperCaseHashCode();
 
@@ -183,7 +185,7 @@ namespace Greathorn
             // Check that we had a good build
             if(exitCode == 0)
             {
-                File.WriteAllText(Path.Combine(sourceFolder, "gg.sha"), GitGetLocalCommit(sourceFolder));
+                File.WriteAllText(Path.Combine(sourceFolder, k_BuildInfo), GitGetLocalCommit(sourceFolder));
             }
         }
         static void WorkspaceSetup(string workspaceRoot)
