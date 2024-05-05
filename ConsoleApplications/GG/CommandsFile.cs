@@ -4,12 +4,13 @@ using System.Text.Json.Serialization;
 
 namespace GG
 {   
-    public class Commands
+    public class CommandsFile
     {
+        public const string Extension = "gg.json";
+
         [JsonPropertyName("actions")]
         public required Action[] Actions;
 
-       
         public class Action
         {
             [JsonPropertyName("verb")]

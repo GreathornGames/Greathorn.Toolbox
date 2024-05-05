@@ -43,28 +43,29 @@ namespace Greathorn
                 string ggProgramFolder = Path.Combine(settings.GreathornProgramsFolder, "GG");
 
                 // Try to find the desired execution
-                string[] programFolderCommands = Directory.GetFiles(ggProgramFolder, $"*{SettingsProvider.GGCommandExtension}", SearchOption.TopDirectoryOnly);
-                string[] projectFolderCommands = Directory.GetFiles(settings.ProjectsFolder, $"*{SettingsProvider.GGCommandExtension}", SearchOption.AllDirectories);
+                string[] programFolderCommands = Directory.GetFiles(ggProgramFolder, $"*{CommandsFile.Extension}", SearchOption.TopDirectoryOnly);
+                string[] projectFolderCommands = Directory.GetFiles(settings.ProjectsFolder, $"*{CommandsFile.Extension}", SearchOption.AllDirectories);
 
 
-                Dictionary<string, Commands.Action> parsedActions = [];
+                Dictionary<string, CommandsFile.Action> parsedActions = [];
 
                 // Parse Programs
                 int programFolderCommandsCount = programFolderCommands.Length;
                 for(int i = 0; i < programFolderCommandsCount; i++)
                 {
                     string json = File.ReadAllText(programFolderCommands[i]);
-                    Commands? c = JsonSerializer.Deserialize<Commands>(json);
+                    CommandsFile? c = JsonSerializer.Deserialize<CommandsFile>(json);
                     if(c == null)
                     {
                         Log.WriteLine($"Unable to parse {programFolderCommands[i]}.", "JSON", ILogOutput.LogType.Error);
                         continue;
                     }
-                    else
+                    else if(c.Actions == null || c.Actions.Length == 0)
                     {
-                        Commands.AddActions(c.Actions, parsedActions);
+                        Log.WriteLine($"No actions found in {projectFolderCommands[i]}.", "JSON", ILogOutput.LogType.Info);
+                        continue;
                     }
-                  
+                    CommandsFile.AddActions(c.Actions, parsedActions);
                 }
 
                 // Parse Project
@@ -72,24 +73,24 @@ namespace Greathorn
                 for (int i = 0; i < projectFolderCommandsCount; i++)
                 {
                     string json = File.ReadAllText(projectFolderCommands[i]);
-                    Commands? c = JsonSerializer.Deserialize<Commands>(json);
+                    CommandsFile? c = JsonSerializer.Deserialize<CommandsFile>(json);
                     if (c == null)
                     {
                         Log.WriteLine($"Unable to parse {projectFolderCommands[i]}.", "JSON", ILogOutput.LogType.Error);
                         continue;
                     }
-                    else
+                    else if(c.Actions == null || c.Actions.Length == 0)
                     {
-                        Commands.AddActions(c.Actions, parsedActions);
+                        Log.WriteLine($"No actions found in {projectFolderCommands[i]}.", "JSON", ILogOutput.LogType.Info);
+                        continue;
                     }
-
+                    CommandsFile.AddActions(c.Actions, parsedActions);
                 }
-
             }
             catch (Exception ex)
             {
                 framework.ExceptionHandler(ex);
-            }            
+            }
         }
     }
 }

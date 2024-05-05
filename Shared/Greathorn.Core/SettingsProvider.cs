@@ -16,7 +16,6 @@ namespace Greathorn.Core
         public const string P4IgnoreFileName = "p4ignore.txt";
         public const string P4ConfigFileName = "p4config.txt";
         public const string BuildHashFileName = "GG_BUILD_SHA";
-        public const string GGCommandExtension = ".gg.json";
 
         public readonly string BoostrapLibrary;
         public readonly string RootFolder;
