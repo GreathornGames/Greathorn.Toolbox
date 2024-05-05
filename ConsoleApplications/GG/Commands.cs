@@ -31,6 +31,12 @@ namespace GG
             [JsonPropertyName("command")]
             public string? Command { get; set; }
 
+            [JsonPropertyName("workingDirectory")]
+            public string? WorkingDirectory { get; set; }
+
+            [JsonPropertyName("arguments")]
+            public string? Arguments { get; set; }
+
             [JsonPropertyName("description")]
             public string? Description { get; set; }
 

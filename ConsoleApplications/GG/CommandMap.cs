@@ -17,12 +17,17 @@ namespace GG
         {
             public string? Command;
             public string? Description;
+            public string? WorkingDirectory;
+            public string? Arguments;
+
             public Dictionary<string, CommandMapAction> Children = new Dictionary<string, CommandMapAction>();
 
             public CommandMapAction(Commands.CommandVerb action)
             {
                 Command = action.Command;
                 Description = action.Description;
+                WorkingDirectory = action.WorkingDirectory;
+                Arguments = action.Arguments;
 
                 if(action.Actions != null && action.Actions.Length > 0)
                 {
@@ -49,6 +54,8 @@ namespace GG
             {
                 Command = action.Command;
                 Description = action.Description;
+                WorkingDirectory = action.WorkingDirectory;
+                Arguments = action.Arguments;
 
                 if (action.Actions != null && action.Actions.Length > 0)
                 {

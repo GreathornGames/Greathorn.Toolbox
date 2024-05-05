@@ -96,18 +96,28 @@ namespace Greathorn
                     CommandMapAction? action = map.GetAction(framework.Arguments.ToString());
                     if (action != null && action.Command != null)
                     {
-                        string command = action.Command;
+                        string? arguments = action.Arguments;
+                        if (arguments != null)
+                        {
+                            arguments = arguments.Replace("{ROOT}", settings.RootFolder);
+                        }
 
-                        command = command.Replace("{ROOT}", settings.RootFolder);
-                        string[] split = command.Split(' ', 1);
-                        if (split.Length > 1)
+                        string? workingDirectory = action.WorkingDirectory;
+                        if(workingDirectory != null)
                         {
-                            ProcessUtil.Spawn(split[0], split[1]);
+                            workingDirectory = workingDirectory.Replace("{ROOT}", settings.RootFolder);
                         }
-                        else
+
+
+                        // We cant actually just run batch files they have to be ran from a command prompt
+                        string? command = action.Command.Replace("{ROOT}", settings.RootFolder);
+                        if(action.Command.EndsWith(".bat"))
                         {
-                            ProcessUtil.Spawn(command, null);
+                            arguments = $"/K {command} {arguments}";
+                            command = "cmd.exe";
                         }
+
+                        ProcessUtil.SpawnSeperate(command, arguments, workingDirectory);
                     }
                     else
                     {

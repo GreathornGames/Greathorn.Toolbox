@@ -18,17 +18,18 @@ namespace Greathorn.Core.Utils
 			process.StartInfo.EnvironmentVariables["DOTNET_CLI_TELEMETRY_OPTOUT"] = "true";
 		}
 
-        public static bool Spawn(string executablePath, string? arguments)
+        public static bool Spawn(string executablePath, string? arguments, string? workingDirectory)
 		{
 			using Process childProcess = new Process();
 			SetupEnvironmentVariables(childProcess);
+            childProcess.StartInfo.WorkingDirectory = string.IsNullOrEmpty(workingDirectory) ? null : workingDirectory;
 			childProcess.StartInfo.FileName = executablePath;
-			childProcess.StartInfo.Arguments = string.IsNullOrEmpty(arguments) ? "" : arguments;
-			childProcess.StartInfo.UseShellExecute = false;
+			childProcess.StartInfo.Arguments = string.IsNullOrEmpty(arguments) ? string.Empty : arguments;
+            childProcess.StartInfo.UseShellExecute = false;
 			return childProcess.Start();
 		}
 
-		public static bool SpawnHidden(string executablePath, string? arguments)
+        public static bool SpawnHidden(string executablePath, string? arguments)
 		{
 			using Process childProcess = new Process();
 			SetupEnvironmentVariables(childProcess);
@@ -41,10 +42,14 @@ namespace Greathorn.Core.Utils
 			return childProcess.Start();
 		}
 
-        public static bool SpawnSeperate(string executablePath, string? arguments)
+        public static bool SpawnSeperate(string executablePath, string? arguments, string? workingDirectory, bool elevate = false)
         {
-            using Process childProcess = new Process();           
-            childProcess.StartInfo.Verb = "runas";
+            using Process childProcess = new Process();
+            if (elevate)
+            {
+                childProcess.StartInfo.Verb = "runas";
+            }
+            childProcess.StartInfo.WorkingDirectory = string.IsNullOrEmpty(workingDirectory) ? null : workingDirectory;
             childProcess.StartInfo.FileName = executablePath;
             childProcess.StartInfo.Arguments = string.IsNullOrEmpty(arguments) ? "" : arguments;
             childProcess.StartInfo.UseShellExecute = true;
