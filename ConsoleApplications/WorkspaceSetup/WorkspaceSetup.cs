@@ -107,7 +107,7 @@ namespace Greathorn
                 Log.WriteLine("- This is being skipped due to being in DEBUG mode.");
 #else
                 ProcessUtil.SpawnSeperate("dotnet", $"{settings.BoostrapLibrary} quiet");
-                framework.Shutdown();
+                framework.Shutdown(true);
 #endif
             }
         }

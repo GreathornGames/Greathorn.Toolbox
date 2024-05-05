@@ -51,7 +51,7 @@ namespace Greathorn.Core
             }
         }
 
-		public void Shutdown()
+		public void Shutdown(bool forced = false)
 		{
             if (m_HasTerminated) return;
             m_HasTerminated = true;
@@ -61,7 +61,7 @@ namespace Greathorn.Core
 
             // Set our last know code
             System.Environment.ExitCode = Environment.ExitCode;
-            if(m_ShouldPause)
+            if(m_ShouldPause && !forced)
             {
                 Console.WriteLine("Press Any Key To Continue ...");
                 Console.ReadKey();
