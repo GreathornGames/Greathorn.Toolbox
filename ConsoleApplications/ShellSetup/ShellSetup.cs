@@ -1,6 +1,5 @@
 using Greathorn.Core;
 using Greathorn.Core.Loggers;
-using Greathorn.Core.Utils;
 using Greathorn.Services.Perforce;
 
 namespace Greathorn
@@ -18,44 +17,45 @@ namespace Greathorn
 
 			try
 			{
+                // Find our root
 				string? workspaceRoot = PerforceUtil.GetWorkspaceRoot();
-                
-				if (workspaceRoot != null)
+                if(workspaceRoot == null)
+                {
+                    Log.WriteLine("Unable to find workspace root.", ILogOutput.LogType.Error);
+                    framework.Environment.UpdateExitCode(1, true);
+                    return;
+                }
+
+                // Try to standardize our file/locations, etc.
+                SettingsProvider settings = new SettingsProvider(workspaceRoot);              
+			
+                // Start a file log
+                Log.AddLogOutput(new FileLogOutput(Path.Combine(settings.LogsFolder, "ShellSetup.log")));
+
+                // General environment variables
+                Environment.SetEnvironmentVariable("Workspace", settings.RootFolder);
+				Environment.SetEnvironmentVariable("BatchFiles", settings.BuildBatchFilesFolder);
+				Environment.SetEnvironmentVariable("GGTemp", settings.TempFile);
+
+                // Setup some known UE related variables
+				Environment.SetEnvironmentVariable("COMPUTERNAME", System.Environment.MachineName);
+
+                // Add DotNET to path
+                string? existingPath = Environment.GetEnvironmentVariable("PATH");
+                if (existingPath == null || !existingPath.Contains(settings.DotNETExecutablesFolder))
+                {
+                    Environment.SetEnvironmentVariable("PATH", $"{existingPath};{settings.DotNETExecutablesFolder}");
+                }
+
+				// P4 Config
+				if (File.Exists(settings.P4ConfigFile))
 				{
-                    // Start a file log
-                    Log.AddLogOutput(new FileLogOutput(Path.Combine(workspaceRoot, "Logs", "ShellSetup.log")));
-
-                    // General Environment
-                    Environment.SetEnvironmentVariable("Workspace", workspaceRoot);
-					Environment.SetEnvironmentVariable("BatchFiles", Path.Combine(workspaceRoot, "Engine", "Build", "BatchFiles"));
-					Environment.SetEnvironmentVariable("GGTemp", Path.Combine(workspaceRoot, "gg.tmp"));
-					Environment.SetEnvironmentVariable("COMPUTERNAME", System.Environment.MachineName);
-
-
-                    // Add DotNET to path
-                    string? existingPath = Environment.GetEnvironmentVariable("PATH");
-                    string programs = Path.Combine(workspaceRoot, "Greathorn", "Binaries", "DotNET");
-                    if (existingPath == null || !existingPath.Contains(programs))
-                    {
-                        Environment.SetEnvironmentVariable("PATH", $"{existingPath};{programs}");
-                    }
-
-					// P4 Config
-					string p4Config = Path.Combine(workspaceRoot, PerforceConfig.FileName);
-					if (File.Exists(p4Config))
-					{
-						PerforceConfig config = new(p4Config);
-						Environment.SetEnvironmentVariable("P4CLIENT", config.Client);
-						Environment.SetEnvironmentVariable("P4PORT", config.Port);
-					}
+					PerforceConfig config = new(settings.P4ConfigFile);
+					Environment.SetEnvironmentVariable("P4CLIENT", config.Client);
+					Environment.SetEnvironmentVariable("P4PORT", config.Port);
+				}
 
 					Log.WriteLine("Ready.");
-				}
-				else
-				{
-					Log.WriteLine("Unable to find workspace.", ILogOutput.LogType.Error);
-					framework.Environment.UpdateExitCode(1, true);
-				}
 			}
 			catch(Exception ex)
 			{

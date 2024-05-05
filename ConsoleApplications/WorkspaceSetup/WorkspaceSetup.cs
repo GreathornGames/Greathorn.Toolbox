@@ -20,51 +20,50 @@ namespace Greathorn
 
 			try
 			{
-				string? workspaceRoot = PerforceUtil.GetWorkspaceRoot();
-				if (workspaceRoot == null)
-				{
-					Log.WriteLine("Unable to find workspace root.", ILogOutput.LogType.Error);
-					framework.Environment.UpdateExitCode(-1, true);
-					return;
-				}
-				else
-				{
-                    // Start a file log
-                    Log.AddLogOutput(new FileLogOutput(Path.Combine(workspaceRoot, "Logs", "WorkspaceSetup.log")));
-                    Log.WriteLine($"Workspace Root: {workspaceRoot}", ILogOutput.LogType.Info);
-				}
+                // Find our root
+                string? workspaceRoot = PerforceUtil.GetWorkspaceRoot();
+                if (workspaceRoot == null)
+                {
+                    Log.WriteLine("Unable to find workspace root.", ILogOutput.LogType.Error);
+                    framework.Environment.UpdateExitCode(1, true);
+                    return;
+                }
+
+                // Try to standardize our file/locations, etc.
+                SettingsProvider settings = new SettingsProvider(workspaceRoot);
 
 
+                Log.AddLogOutput(new FileLogOutput(Path.Combine(settings.LogsFolder, "WorkspaceSetup.log")));
+                settings.Output();
 
 				// Setup Perforce
 				Log.WriteLine("Setup Perforce", ILogOutput.LogType.Notice);
 
 				Log.WriteLine("Set P4 Flags ...", ILogOutput.LogType.Default);
-				ProcessUtil.SpawnHidden(PerforceProvider.GetExecutablePath(), $"set P4IGNORE={Greathorn.Services.Perforce.PerforceConfig.P4Ignore} P4CONFIG={PerforceConfig.FileName} P4CHARSET={Greathorn.Services.Perforce.PerforceConfig.CharacterSet}");
+				ProcessUtil.SpawnHidden(PerforceProvider.GetExecutablePath(), $"set P4IGNORE={SettingsProvider.P4IgnoreFileName} P4CONFIG={SettingsProvider.P4ConfigFileName} P4CHARSET={SettingsProvider.P4CharacterSet}");
 
-				Log.WriteLine($"Configure {PerforceConfig.FileName} ...", ILogOutput.LogType.Default);
-				string configPath = Path.Combine(workspaceRoot, PerforceConfig.FileName);
-				if (!File.Exists(configPath))
+				Log.WriteLine($"Configure P4Config ...", ILogOutput.LogType.Default);				
+				if (!File.Exists(settings.P4ConfigFile))
 				{
-					Log.WriteLine($"Writing default {PerforceConfig.FileName} ...", ILogOutput.LogType.Default);
-					PerforceConfig.WriteDefault(configPath);
-					Log.WriteLine($"Opening {PerforceConfig.FileName} for edit.", ILogOutput.LogType.Default);
-					ProcessUtil.OpenFileWithDefault(configPath);
+					Log.WriteLine($"Writing default P4Config ...", ILogOutput.LogType.Default);
+					PerforceConfig.WriteDefault(settings.P4ConfigFile, SettingsProvider.P4Port, SettingsProvider.P4CharacterSet, SettingsProvider.P4IgnoreFileName);
+					Log.WriteLine($"Opening P4Config for edit.", ILogOutput.LogType.Default);
+					ProcessUtil.OpenFileWithDefault(settings.P4ConfigFile);
 				}
 				else
 				{
 					// We're not going to overwrite, but maybe there is a todo here where we load it and validate?
-					Log.WriteLine($"Existing {PerforceConfig.FileName} was found.", ILogOutput.LogType.Default);
+					Log.WriteLine($"Existing P4Config was found.", ILogOutput.LogType.Default);
 				}
 
 				// Setup VSCode
 				Log.WriteLine("Setup VSCode", ILogOutput.LogType.Notice);
-				string vscodePath = Path.Combine(workspaceRoot, ".vscode", "settings.json");
+				string vscodePath = Path.Combine(settings.RootFolder, ".vscode", "settings.json");
 				if (!File.Exists(vscodePath))
 				{
 					FileUtil.EnsureFileFolderHierarchyExists(vscodePath);
 
-					string shellSetup = Path.Combine(workspaceRoot, "Greathorn", "Binaries", "DotNET", "ShellSetup.exe").Replace("\\", "\\\\");
+					string shellSetup = Path.Combine(settings.DotNETExecutablesFolder, "ShellSetup.exe").Replace("\\", "\\\\");
 					File.WriteAllLines(vscodePath, [
 						"{",
 						"\t\"terminal.integrated.profiles.windows\": {",
@@ -84,8 +83,8 @@ namespace Greathorn
 				{
 					case Core.Modules.PlatformModule.PlatformType.macOS:
 					case Core.Modules.PlatformModule.PlatformType.Linux:
-						string[] shFiles = Directory.GetFiles(workspaceRoot, "*.sh", SearchOption.AllDirectories);
-						string[] commandFiles = Directory.GetFiles(workspaceRoot, "*.command", SearchOption.AllDirectories);
+						string[] shFiles = Directory.GetFiles(settings.RootFolder, "*.sh", SearchOption.AllDirectories);
+						string[] commandFiles = Directory.GetFiles(settings.RootFolder, "*.command", SearchOption.AllDirectories);
 
 						foreach (string s in shFiles)
 						{
@@ -102,12 +101,12 @@ namespace Greathorn
 				switch (framework.Platform.OperatingSystem)
 				{
 					case Greathorn.Core.Modules.PlatformModule.PlatformType.Windows:
-						string prereqExecutable = Path.Combine(workspaceRoot, "Engine", "Extras", "Redist", "en-us", "UEPrereqSetup_x64.exe");
+						string prereqExecutable = Path.Combine(settings.RootFolder, "Engine", "Extras", "Redist", "en-us", "UEPrereqSetup_x64.exe");
 						Log.WriteLine($"Running {prereqExecutable} ...", ILogOutput.LogType.Default);
 						ProcessUtil.SpawnHidden(prereqExecutable, "/quiet /norestart");
 
 
-						string versionSelector = Path.Combine(workspaceRoot, "Engine", "Binaries", "Win64", "UnrealVersionSelector-Win64-Shipping.exe");
+						string versionSelector = Path.Combine(settings.RootFolder, "Engine", "Binaries", "Win64", "UnrealVersionSelector-Win64-Shipping.exe");
 						if (File.Exists(versionSelector))
 						{
 							Log.WriteLine($"Running {versionSelector} ...", ILogOutput.LogType.Default);

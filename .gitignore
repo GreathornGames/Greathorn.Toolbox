@@ -397,6 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-
-Binaries/
-greathorn.cli.repository
+# Greathorn Tooling
+GG_BUILD_SHA

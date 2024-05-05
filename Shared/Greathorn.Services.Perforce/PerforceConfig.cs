@@ -11,19 +11,14 @@ namespace Greathorn.Services.Perforce
 {
     public class PerforceConfig
     {
-        public const string DefaultPort = "perforce.greathorn.games:1666";
-        public const string FileName = "p4config.txt";
-        public const string P4Ignore = "p4ignore.txt";
-		public const string CharacterSet = "auto";
-
         public const int MaxParallelConnections = 4;
 
         private readonly string m_Client;
         private readonly string m_Password;
-        private readonly string m_Port = DefaultPort;
+        private readonly string m_Port;
         private readonly string m_Username;
 
-        public static void WriteDefault(string path)
+        public static void WriteDefault(string path, string defaultPort,  string characterSet, string p4ignore)
         {
             
             StringBuilder builder = new StringBuilder();
@@ -73,17 +68,19 @@ namespace Greathorn.Services.Perforce
             builder.AppendLine($"P4CLIENT= {clientDefault}");
             builder.AppendLine("#");
             builder.AppendLine("# This is the hostname and port of our Perforce server, it is unlikely that you will need to change this.");
-            builder.AppendLine($"P4PORT= {DefaultPort}");
+            builder.AppendLine($"P4PORT= {defaultPort}");
             builder.AppendLine("#");
             builder.AppendLine("## DO NOT EDIT BELOW THIS LINE ###");
-            builder.AppendLine($"P4CHARSET = {CharacterSet}");
-            builder.AppendLine($"P4IGNORE = {P4Ignore}");
+            builder.AppendLine($"P4CHARSET = {characterSet}");
+            builder.AppendLine($"P4IGNORE = {p4ignore}");
 
             File.WriteAllText(path, builder.ToString());
         }
 
-        public PerforceConfig(string path = FileName)
+        public PerforceConfig(string path)
         {
+
+            // TODO: Check for environment based?
             if (File.Exists(path))
             {
                 Core.Log.WriteLine("P4Config found at " + path, PerforceProvider.LogCategory);
@@ -123,17 +120,15 @@ namespace Greathorn.Services.Perforce
                 {
                     m_Port = configPort;
                 }
-
             }
 
-            // Failsafe settings
+            // Failsafe resets
             m_Username ??= string.Empty;
             m_Password ??= string.Empty;
             m_Client ??= string.Empty;
-            m_Port ??= DefaultPort;
+            m_Port ??= string.Empty;
 
             Output();
-
         }
 
         public string Username => m_Username;
