@@ -35,7 +35,7 @@ namespace GG
                         {
                             if (!Children.ContainsKey(childAction.Identifier))
                             {
-                                Children.Add(childAction.Identifier, new CommandMapAction(childAction));
+                               Children.Add(childAction.Identifier, new CommandMapAction(childAction));
                             }
                             else
                             {
@@ -72,28 +72,19 @@ namespace GG
                 }
             }
 
-            public void AddHelpOutputToBuilder(StringBuilder builder, int depth = 0)
-            {
-                string indent = string.Empty;
-                for (int i = 0; i < depth; i++)
-                {
-                    indent += "\t";
-                }
-
+            public void AddHelpCommands(List<HelpCommand> commands, string prefix = "")
+            {               
                 if (!string.IsNullOrEmpty(Command))
-                {                
-                    builder.AppendLine($"{indent}{Description}");
+                {
+                    commands.Add(new HelpCommand(prefix, Description));
                 }
 
                 if(Children.Count > 0)
                 {
-                    depth++;
                     foreach(KeyValuePair<string, CommandMapAction> kvp in Children)
                     {
-                        builder.AppendLine($"{indent}{kvp.Key}");
-                        kvp.Value.AddHelpOutputToBuilder(builder, depth);
-                    }                   
-                    depth--;               
+                        kvp.Value.AddHelpCommands(commands, $"{prefix} {kvp.Key}");
+                    }                                
                 }
             }
         }
@@ -165,26 +156,56 @@ namespace GG
 
         public string GetOutput()
         {
-            StringBuilder builder = new StringBuilder();
-            builder.AppendLine("GG Registered Actions");
-            
+            List<HelpCommand> commands = new List<HelpCommand>();
             foreach(KeyValuePair<string, CommandMapAction> kvp in m_Map)
             {
-                builder.AppendLine($"{kvp.Key}");
-
                 // Odd case where a top level command exists
                 if (kvp.Value.Command != null)
                 {
-                    builder.AppendLine($"\t{kvp.Value.Description}");
-                }
+                    commands.Add(new HelpCommand(kvp.Key, kvp.Value.Description));
+                   
+                }               
 
                 if(kvp.Value.Children.Count > 0)
                 {
-                    kvp.Value.AddHelpOutputToBuilder(builder, 1);
+                    kvp.Value.AddHelpCommands(commands, kvp.Key);
                 }
             }
 
+            StringBuilder builder = new StringBuilder();
+            builder.AppendLine("GG Registered Actions");
+            builder.AppendLine();
+
+            int helpCount = commands.Count;
+            int lhsCharacterCount = 0;
+            for(int i = 0; i < helpCount; i++)
+            {
+                if(commands[i].Command.Length > lhsCharacterCount)
+                {
+                    lhsCharacterCount = commands[i].Command.Length;
+                }
+            }
+
+            int padding = lhsCharacterCount + 5;
+            for(int i = 0; i < helpCount; i++)
+            {
+                builder.AppendLine($"{commands[i].Command.PadRight(padding)}{commands[i].Description}");
+            }
+
+
             return builder.ToString();
+        }
+
+        public struct HelpCommand
+        {
+            public string Command;
+            public string? Description;
+
+            public HelpCommand(string command, string? description)
+            {
+                Command = command;
+                Description = description;
+            }
         }
     }
 }

@@ -1,7 +1,5 @@
 // Copyright Greathorn Games Inc. All Rights Reserved.
 
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using GG;
 using Greathorn.Core;
 using Greathorn.Core.Loggers;
@@ -20,7 +18,9 @@ namespace Greathorn
             {
                 DefaultLogCategory = "GG",
                 LogOutputs = [new Greathorn.Core.Loggers.ConsoleLogOutput()],
-                PauseOnExit = true
+                PauseOnExit = false,
+                DisplayHeader = false,
+                DisplayRuntime = false
             });
 
             try
@@ -39,7 +39,6 @@ namespace Greathorn
 
 
                 Log.AddLogOutput(new FileLogOutput(Path.Combine(settings.LogsFolder, "GG.log")));
-                settings.Output();
 
                 // Find all command macros
                 string ggProgramFolder = Path.Combine(settings.GreathornProgramsFolder, "GG");

@@ -8,5 +8,7 @@ namespace Greathorn.Core
         public ILogOutput[]? LogOutputs;
         public bool PauseOnExit = false;
         public bool RequiresElevatedAccess = false;
+        public bool DisplayHeader = true;
+        public bool DisplayRuntime = true;
     }
 }

@@ -18,6 +18,7 @@ namespace Greathorn.Core
         readonly Timer m_RuntimeTimer = new Timer();
         bool m_HasTerminated = false;
         readonly bool m_ShouldPause = false;
+        readonly bool m_DisplayRuntime;
 
 		public ConsoleApplication(ConsoleApplicationSettings settings)
 		{
@@ -39,10 +40,14 @@ namespace Greathorn.Core
             {
                 m_ShouldPause = false;
             }
+           
+            if (settings.DisplayHeader)
+            {
+                Log.WriteLine($"Core Framework v{Assembly.CoreAssembly.GetName().Version}", ILogOutput.LogType.Notice);
+            }
+            m_DisplayRuntime = settings.DisplayRuntime;
 
-            Log.WriteLine($"Core Framework v{Assembly.CoreAssembly.GetName().Version}", ILogOutput.LogType.Notice);
-
-            if(settings.RequiresElevatedAccess && !ProcessUtil.IsElevated())
+            if (settings.RequiresElevatedAccess && !ProcessUtil.IsElevated())
             {
                 Log.WriteLine("Elevation REQUIRED", k_LogCategory, ILogOutput.LogType.Error);
                 ProcessUtil.Elevate("dotnet", System.IO.Directory.GetCurrentDirectory(), $"{Assembly.ExecutingAssembly.Location} { Arguments}", false); ;
@@ -56,7 +61,10 @@ namespace Greathorn.Core
             if (m_HasTerminated) return;
             m_HasTerminated = true;
 
-			Log.WriteLine($"Runtime {m_RuntimeTimer.GetElapsedMilliseconds()}ms", ILogOutput.LogType.Info, k_LogCategory);
+            if (m_DisplayRuntime)
+            {
+                Log.WriteLine($"Runtime {m_RuntimeTimer.GetElapsedMilliseconds()}ms", ILogOutput.LogType.Info, k_LogCategory);
+            }
             Log.Shutdown();
 
             // Set our last know code
