@@ -31,25 +31,20 @@ namespace Greathorn
                 }
 
                 // Try to standardize our file/locations, etc.
-                SettingsProvider settings = new SettingsProvider(workspaceRoot);
+                SettingsProvider settings = new(workspaceRoot);
 
 
                 Log.AddLogOutput(new FileLogOutput(Path.Combine(settings.LogsFolder, "WorkspaceSetup.log")));
                 settings.Output();
 
-                if(UpdateSourceCode(framework, settings))
-                {
-                    ProcessUtil.SpawnSeperate("dotnet", settings.BoostrapLibrary);
-                    return;
-                }
-                else
-                {
-                    SetupPerforce(settings);
-                    SetupVSCode(settings);
-                    SetupExecutionFlags(framework, settings);
-                    SetupUnrealEngine(framework, settings);
-                }
-			}
+                UpdateSourceCode(framework, settings);
+                BuildSource(framework, settings);
+                SetupPerforce(settings);
+                SetupVSCode(settings);
+                SetupExecutionFlags(framework, settings);
+                SetupUnrealEngine(framework, settings);
+
+            }
 			catch(Exception ex)
 			{
 				framework.ExceptionHandler(ex);
@@ -57,37 +52,66 @@ namespace Greathorn
         }
 
         #region Process
-        static bool UpdateSourceCode(ConsoleApplication framework, SettingsProvider settings)
+        static void UpdateSourceCode(ConsoleApplication framework, SettingsProvider settings)
         {
-#if DEBUG
-            return false;
-#else
             if(framework.Arguments.Arguments.Contains("no-source"))
             {
                 Log.WriteLine("Skipping Source Check (Argument) ...", "SOURCE", ILogOutput.LogType.Default);
-                return false;
+                return;
             }
-
+           
             string? branch = GitProvider.GetBranch(settings.CLISourceFolder);
-            if (branch == null)
-            {
-                branch = "main";
-            }
+            branch ??= "main";
 
             string localCommitHash = GitProvider.GetLocalCommit(settings.CLISourceFolder);
             string? remoteCommitHash = GitProvider.GetRemoteCommit(settings.CLISourceFolder, branch);
-
+         
             if(localCommitHash == remoteCommitHash)
             {
                 Log.WriteLine($"Local repository up to date ({localCommitHash}).", "SOURCE", ILogOutput.LogType.Default);
-                return false;
+                return;
             }
             else
             {
-                return true;
-            }
+                Log.WriteLine($"Depot needs updating as the local {localCommitHash} differs from {remoteCommitHash}.", "SOURCE", ILogOutput.LogType.Info);
+#if DEBUG
+                Log.WriteLine("- This is being skipped due to being in DEBUG mode.");
+                return;
+#else
+                GitProvider.UpdateRepo(settings.CLISourceFolder, branch);
+                return;
 #endif
+            }
         }
+
+        static void BuildSource(ConsoleApplication framework, SettingsProvider settings)
+        {
+            if (framework.Arguments.Arguments.Contains("no-build"))
+            {
+                Log.WriteLine("Skipping Build Check (Argument) ...", "BUILD", ILogOutput.LogType.Default);
+                return;
+            }
+
+            string localCommitHash = GitProvider.GetLocalCommit(settings.CLISourceFolder);
+            string builtTagFile = Path.Combine(settings.CLISourceFolder, SettingsProvider.BuildHashFileName);
+            bool shouldRebuild = !File.Exists(builtTagFile);
+            if (!shouldRebuild)
+            {
+                shouldRebuild = (File.ReadAllText(builtTagFile).Trim() != localCommitHash);
+            }
+
+            if (shouldRebuild)
+            {
+                Log.WriteLine($"A rebuild of programs is needed.", "BUILD", ILogOutput.LogType.Notice);
+#if DEBUG
+                Log.WriteLine("- This is being skipped due to being in DEBUG mode.");
+#else
+                ProcessUtil.SpawnSeperate("dotnet", $"{settings.BoostrapLibrary} quiet");
+                framework.Shutdown();
+#endif
+            }
+        }
+
         static void SetupPerforce(SettingsProvider settings)
         {
             Log.WriteLine("Setup Perforce", ILogOutput.LogType.Notice);

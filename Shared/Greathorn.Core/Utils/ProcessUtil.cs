@@ -43,8 +43,7 @@ namespace Greathorn.Core.Utils
 
         public static bool SpawnSeperate(string executablePath, string? arguments)
         {
-            using Process childProcess = new Process();
-            SetupEnvironmentVariables(childProcess);
+            using Process childProcess = new Process();           
             childProcess.StartInfo.Verb = "runas";
             childProcess.StartInfo.FileName = executablePath;
             childProcess.StartInfo.Arguments = string.IsNullOrEmpty(arguments) ? "" : arguments;
