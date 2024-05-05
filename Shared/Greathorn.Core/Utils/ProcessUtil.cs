@@ -18,7 +18,7 @@ namespace Greathorn.Core.Utils
 			process.StartInfo.EnvironmentVariables["DOTNET_CLI_TELEMETRY_OPTOUT"] = "true";
 		}
 
-		public static bool Spawn(string executablePath, string? arguments)
+        public static bool Spawn(string executablePath, string? arguments)
 		{
 			using Process childProcess = new Process();
 			SetupEnvironmentVariables(childProcess);
@@ -41,7 +41,18 @@ namespace Greathorn.Core.Utils
 			return childProcess.Start();
 		}
 
-		public static int Execute(string executablePath, string? workingDirectory, string? arguments, string? input, TextWriter log)
+        public static bool SpawnSeperate(string executablePath, string? arguments)
+        {
+            using Process childProcess = new Process();
+            SetupEnvironmentVariables(childProcess);
+            childProcess.StartInfo.Verb = "runas";
+            childProcess.StartInfo.FileName = executablePath;
+            childProcess.StartInfo.Arguments = string.IsNullOrEmpty(arguments) ? "" : arguments;
+            childProcess.StartInfo.UseShellExecute = true;
+            return childProcess.Start();
+        }
+
+        public static int Execute(string executablePath, string? workingDirectory, string? arguments, string? input, TextWriter log)
 		{
 			return Execute(executablePath, workingDirectory, arguments, input, (processIdentifier, line) => log.WriteLine(line));
 		}

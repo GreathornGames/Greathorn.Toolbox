@@ -17,22 +17,28 @@ namespace Greathorn.Core
         public const string P4ConfigFileName = "p4config.txt";
         public const string BuildHashFileName = "GG_BUILD_SHA";
 
+        public readonly string BoostrapLibrary;
         public readonly string RootFolder;
         public readonly string LogsFolder;
         public readonly string BuildBatchFilesFolder;
         public readonly string TempFile;
         public readonly string P4ConfigFile;
         public readonly string DotNETExecutablesFolder;
+        public readonly string CLISourceFolder;
 
         public SettingsProvider(string root)
         {
             RootFolder = root;
+
+            BoostrapLibrary = Path.Combine(RootFolder, "Greathorn", "Binaries", "Bootstrap", "Bootstrap.dll");
+
             LogsFolder = Path.Combine(RootFolder, "Logs");
             BuildBatchFilesFolder = Path.Combine(RootFolder, "Engine", "Build", "BatchFiles");
             TempFile = Path.Combine(RootFolder, "gg.tmp");
 
             DotNETExecutablesFolder = Path.Combine(RootFolder, "Greathorn", "Binaries", "DotNET");
             P4ConfigFile = Path.Combine(RootFolder, SettingsProvider.P4ConfigFileName);
+            CLISourceFolder = Path.Combine(RootFolder, "Greathorn", "Source", "Programs", "Greathorn.CLI");
         }
 
         public void Output()

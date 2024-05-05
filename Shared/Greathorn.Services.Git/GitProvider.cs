@@ -76,6 +76,34 @@ namespace Greathorn.Core.Services.Git
 
 			return output[0].Trim();
 		}
+        public static string? GetRemoteCommit(string checkoutFolder, string branch = "main")
+        {
+            // Check current
+            List<string> output = new List<string>();
+            ProcessUtil.Execute(GetExecutablePath(), checkoutFolder,
+                $"ls-remote --sort=committerdate", null, (System.Action<int, string>)((processIdentifier, line) =>
+                {
+                    Core.Log.WriteLine(line, "GIT", ILogOutput.LogType.ExternalProcess);
+                    output.Add(line);
+                }));
+
+            string branchHead = $"refs/heads/{branch}";
+            string? failSafe = null;
+            foreach(string s in output)
+            {
+                string parsed = s.Trim();
+                if(parsed.EndsWith(branchHead))
+                {
+                    return parsed.Substring(0, parsed.Length - branchHead.Length).Trim();
+                }
+
+                if (parsed.EndsWith("HEAD"))
+                {
+                    failSafe = parsed.Substring(0, parsed.Length - 4).Trim();
+                }                
+            }
+            return failSafe;  
+        }
 
 		public static void CheckoutRepo(string uri, string checkoutFolder, string? branch = null, string? commit = null, int depth = -1, bool submodules = true, bool shallowsubmodules = true)
 		{
