@@ -94,12 +94,12 @@ namespace Greathorn.Core.Services.Git
                 string parsed = s.Trim();
                 if(parsed.EndsWith(branchHead))
                 {
-                    return parsed.Substring(0, parsed.Length - branchHead.Length).Trim();
+                    return parsed[..^branchHead.Length].Trim();
                 }
 
                 if (parsed.EndsWith("HEAD"))
                 {
-                    failSafe = parsed.Substring(0, parsed.Length - 4).Trim();
+                    failSafe = parsed[..^4].Trim();
                 }                
             }
             return failSafe;  

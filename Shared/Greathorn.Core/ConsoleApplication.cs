@@ -17,7 +17,7 @@ namespace Greathorn.Core
 
         readonly Timer m_RuntimeTimer = new Timer();
         bool m_HasTerminated = false;
-        bool m_ShouldPause = false;
+        readonly bool m_ShouldPause = false;
 
 		public ConsoleApplication(ConsoleApplicationSettings settings)
 		{

@@ -59,20 +59,17 @@ namespace Greathorn.Core
 				return;
 			}
 
-			if (category == null)
-			{
-				category = DefaultCategory;
-			}
+            category ??= DefaultCategory;
 
 			if (category.Length > k_FixedCategoryLength)
 			{
-				category = category.Substring(0, k_FixedCategoryLength);
+				category = category[..k_FixedCategoryLength];
 			}
 
 
 			for (int i = 0; i < s_LogOutputCount; i++)
 			{
-				s_LogOutputs[i].WriteLine(logType, $"[{DateTime.Now.ToString(k_DateStampFormat)}] {category.ToUpper().PadLeft(k_FixedCategoryLength, ' ')} > {output}");
+				s_LogOutputs[i].WriteLine(logType, $"[{DateTime.Now.ToString(k_DateStampFormat)}] {category.ToUpper(),k_FixedCategoryLength} > {output}");
 			}
 		}
 

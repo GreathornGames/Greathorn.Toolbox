@@ -60,11 +60,11 @@ namespace Greathorn
                 return;
             }
            
-            string? branch = GitProvider.GetBranch(settings.CLISourceFolder);
+            string? branch = GitProvider.GetBranch(settings.GreathornCLIFolder);
             branch ??= "main";
 
-            string localCommitHash = GitProvider.GetLocalCommit(settings.CLISourceFolder);
-            string? remoteCommitHash = GitProvider.GetRemoteCommit(settings.CLISourceFolder, branch);
+            string localCommitHash = GitProvider.GetLocalCommit(settings.GreathornCLIFolder);
+            string? remoteCommitHash = GitProvider.GetRemoteCommit(settings.GreathornCLIFolder, branch);
          
             if(localCommitHash == remoteCommitHash)
             {
@@ -92,8 +92,8 @@ namespace Greathorn
                 return;
             }
 
-            string localCommitHash = GitProvider.GetLocalCommit(settings.CLISourceFolder);
-            string builtTagFile = Path.Combine(settings.CLISourceFolder, SettingsProvider.BuildHashFileName);
+            string localCommitHash = GitProvider.GetLocalCommit(settings.GreathornCLIFolder);
+            string builtTagFile = Path.Combine(settings.GreathornCLIFolder, SettingsProvider.BuildHashFileName);
             bool shouldRebuild = !File.Exists(builtTagFile);
             if (!shouldRebuild)
             {
@@ -141,7 +141,7 @@ namespace Greathorn
             {
                 FileUtil.EnsureFileFolderHierarchyExists(vscodePath);
 
-                string shellSetup = Path.Combine(settings.DotNETExecutablesFolder, "ShellSetup.exe").Replace("\\", "\\\\");
+                string shellSetup = Path.Combine(settings.GreathornDotNETFolder, "ShellSetup.exe").Replace("\\", "\\\\");
                 File.WriteAllLines(vscodePath, [
                     "{",
                         "\t\"terminal.integrated.profiles.windows\": {",

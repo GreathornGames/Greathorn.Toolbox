@@ -16,6 +16,7 @@ namespace Greathorn.Core
         public const string P4IgnoreFileName = "p4ignore.txt";
         public const string P4ConfigFileName = "p4config.txt";
         public const string BuildHashFileName = "GG_BUILD_SHA";
+        public const string GGCommandExtension = ".gg.json";
 
         public readonly string BoostrapLibrary;
         public readonly string RootFolder;
@@ -23,8 +24,12 @@ namespace Greathorn.Core
         public readonly string BuildBatchFilesFolder;
         public readonly string TempFile;
         public readonly string P4ConfigFile;
-        public readonly string DotNETExecutablesFolder;
-        public readonly string CLISourceFolder;
+
+        public readonly string ProjectsFolder;
+
+        public readonly string GreathornCLIFolder;
+        public readonly string GreathornDotNETFolder;
+        public readonly string GreathornProgramsFolder;
 
         public SettingsProvider(string root)
         {
@@ -36,10 +41,14 @@ namespace Greathorn.Core
             BuildBatchFilesFolder = Path.Combine(RootFolder, "Engine", "Build", "BatchFiles");
             TempFile = Path.Combine(RootFolder, "gg.tmp");
 
-            DotNETExecutablesFolder = Path.Combine(RootFolder, "Greathorn", "Binaries", "DotNET");
             P4ConfigFile = Path.Combine(RootFolder, SettingsProvider.P4ConfigFileName);
-            CLISourceFolder = Path.Combine(RootFolder, "Greathorn", "Source", "Programs", "Greathorn.CLI");
+            ProjectsFolder = Path.Combine(RootFolder, "Projects");
+
+            GreathornCLIFolder = Path.Combine(RootFolder, "Greathorn", "Source", "Programs", "Greathorn.CLI");
+            GreathornDotNETFolder = Path.Combine(RootFolder, "Greathorn", "Binaries", "DotNET");
+            GreathornProgramsFolder = Path.Combine(RootFolder, "Greathorn", "Programs");
         }
+
 
         public void Output()
         {

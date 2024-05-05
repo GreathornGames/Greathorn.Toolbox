@@ -27,8 +27,8 @@ namespace Greathorn
                 }
 
                 // Try to standardize our file/locations, etc.
-                SettingsProvider settings = new SettingsProvider(workspaceRoot);              
-			
+                SettingsProvider settings = new(workspaceRoot);
+
                 // Start a file log
                 Log.AddLogOutput(new FileLogOutput(Path.Combine(settings.LogsFolder, "ShellSetup.log")));
 
@@ -42,9 +42,9 @@ namespace Greathorn
 
                 // Add DotNET to path
                 string? existingPath = Environment.GetEnvironmentVariable("PATH");
-                if (existingPath == null || !existingPath.Contains(settings.DotNETExecutablesFolder))
+                if (existingPath == null || !existingPath.Contains(settings.GreathornDotNETFolder))
                 {
-                    Environment.SetEnvironmentVariable("PATH", $"{existingPath};{settings.DotNETExecutablesFolder}");
+                    Environment.SetEnvironmentVariable("PATH", $"{existingPath};{settings.GreathornDotNETFolder}");
                 }
 
 				// P4 Config
