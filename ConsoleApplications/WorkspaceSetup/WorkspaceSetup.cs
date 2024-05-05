@@ -59,10 +59,13 @@ namespace Greathorn
         #region Process
         static bool UpdateSourceCode(ConsoleApplication framework, SettingsProvider settings)
         {
+#if DEBUG
+            return false;
+#else
             if(framework.Arguments.Arguments.Contains("no-source"))
             {
                 Log.WriteLine("Skipping Source Check (Argument) ...", "SOURCE", ILogOutput.LogType.Default);
-                return true;
+                return false;
             }
 
             string? branch = GitProvider.GetBranch(settings.CLISourceFolder);
@@ -83,6 +86,7 @@ namespace Greathorn
             {
                 return true;
             }
+#endif
         }
         static void SetupPerforce(SettingsProvider settings)
         {
@@ -175,7 +179,7 @@ namespace Greathorn
                     break;
             }
         }
-        #endregion
+#endregion
 
         //static bool Symlink(string source, string target, bool deleteInPlace = true)
         //{
