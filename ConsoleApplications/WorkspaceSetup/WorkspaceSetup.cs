@@ -78,7 +78,7 @@ namespace Greathorn
                 Log.WriteLine("- This is being skipped due to being in DEBUG mode.");
                 return;
 #else
-                GitProvider.UpdateRepo(settings.CLISourceFolder, branch);
+                GitProvider.UpdateRepo(settings.GreathornCLIFolder, branch);
                 return;
 #endif
             }

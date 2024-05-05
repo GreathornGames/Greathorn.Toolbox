@@ -43,8 +43,8 @@ namespace Greathorn
                 // Add DotNET to path
                 string? existingPath = Environment.GetEnvironmentVariable("PATH");
                 if (existingPath == null || !existingPath.Contains(settings.GreathornDotNETFolder))
-                {
-                    Environment.SetEnvironmentVariable("PATH", $"{existingPath};{settings.GreathornDotNETFolder}");
+                {                   
+                    Environment.SetEnvironmentVariable("PATH", $@"{existingPath};{settings.GreathornDotNETFolder};");
                 }
 
 				// P4 Config
