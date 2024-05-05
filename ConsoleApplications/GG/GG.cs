@@ -5,7 +5,9 @@ using System.Text.Json.Nodes;
 using GG;
 using Greathorn.Core;
 using Greathorn.Core.Loggers;
+using Greathorn.Core.Utils;
 using Greathorn.Services.Perforce;
+using static GG.CommandMap;
 
 namespace Greathorn
 {
@@ -43,25 +45,16 @@ namespace Greathorn
                 string ggProgramFolder = Path.Combine(settings.GreathornProgramsFolder, "GG");
 
                 // Try to find the desired execution
-                string[] programFolderCommands = Directory.GetFiles(ggProgramFolder, $"*{CommandsFile.Extension}", SearchOption.TopDirectoryOnly);
-                string[] projectFolderCommands = Directory.GetFiles(settings.ProjectsFolder, $"*{CommandsFile.Extension}", SearchOption.AllDirectories);
+                string[] programFolderCommands = Directory.GetFiles(ggProgramFolder, $"*{Commands.Extension}", SearchOption.TopDirectoryOnly);
+                string[] projectFolderCommands = Directory.GetFiles(settings.ProjectsFolder, $"*{Commands.Extension}", SearchOption.AllDirectories);
 
-
-                Dictionary<string, CommandsFile.CommandAction> parsedActions = [];
-
-                CommandsFile newSample = new CommandsFile();
-                newSample.Actions = new CommandsFile.CommandAction[2];
-                newSample.Actions[0] = new CommandsFile.CommandAction();
-                newSample.Actions[0].Identifier = "test";
-                newSample.Actions[1] = new CommandsFile.CommandAction();
-                newSample.Actions[1].Identifier = "test2";
-                string test = newSample.ToJson();
+                CommandMap map = new CommandMap();
 
                 // Parse Programs
                 int programFolderCommandsCount = programFolderCommands.Length;
                 for(int i = 0; i < programFolderCommandsCount; i++)
                 {
-                    CommandsFile? c = CommandsFile.Get(programFolderCommands[i]);
+                    Commands? c = Commands.Get(programFolderCommands[i]);
                     if(c == null)
                     {
                         Log.WriteLine($"Unable to parse {programFolderCommands[i]}.", "JSON", ILogOutput.LogType.Error);
@@ -72,14 +65,15 @@ namespace Greathorn
                         Log.WriteLine($"No actions found in {programFolderCommands[i]}.", "JSON", ILogOutput.LogType.Info);
                         continue;
                     }
-                    CommandsFile.BuildMap(c.Actions, parsedActions);
+
+                    map.AddCommands(c);
                 }
 
                 // Parse Project
                 int projectFolderCommandsCount = projectFolderCommands.Length;
                 for (int i = 0; i < projectFolderCommandsCount; i++)
                 {
-                    CommandsFile? c = CommandsFile.Get(projectFolderCommands[i]);
+                    Commands? c = Commands.Get(projectFolderCommands[i]);
                     if (c == null)
                     {
                         Log.WriteLine($"Unable to parse {projectFolderCommands[i]}.", "JSON", ILogOutput.LogType.Error);
@@ -90,11 +84,37 @@ namespace Greathorn
                         Log.WriteLine($"No actions found in {projectFolderCommands[i]}.", "JSON", ILogOutput.LogType.Info);
                         continue;
                     }
-                    CommandsFile.BuildMap(c.Actions, parsedActions);
+
+                    map.AddCommands(c);
                 }
 
+                if (framework.Arguments.Arguments.Contains("help") || framework.Arguments.Arguments.Count == 0)
+                {
+                    Log.WriteLine(map.GetOutput(), "GG", ILogOutput.LogType.Info);
+                }
+                else
+                {
+                    CommandMapAction? action = map.GetAction(framework.Arguments.ToString());
+                    if (action != null && action.Command != null)
+                    {
+                        string command = action.Command;
 
-
+                        command = command.Replace("{ROOT}", settings.RootFolder);
+                        string[] split = command.Split(' ', 1);
+                        if (split.Length > 1)
+                        {
+                            ProcessUtil.Spawn(split[0], split[1]);
+                        }
+                        else
+                        {
+                            ProcessUtil.Spawn(command, null);
+                        }
+                    }
+                    else
+                    {
+                        Log.WriteLine($"Unable to find valid command for query `{framework.Arguments.ToString()}`.", "GG", ILogOutput.LogType.Error);
+                    }
+                }
             }
             catch (Exception ex)
             {
