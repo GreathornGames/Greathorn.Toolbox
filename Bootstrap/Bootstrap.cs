@@ -197,7 +197,7 @@ namespace Greathorn
             }
 
             // We need to run this process elevated, the main executable is bundled to ensure its elevated, but the library is not.
-            string args = Path.Combine(workspaceRoot, "Greathorn", "Binaries", "DotNET", "WorkspaceSetup.dll");
+            string args = $"{Path.Combine(workspaceRoot, "Greathorn", "Binaries", "DotNET", "WorkspaceSetup.dll")} no-source no-build";
             if (s_QuietMode)
             {
                 args += " quiet";

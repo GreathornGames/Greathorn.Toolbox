@@ -1,41 +1,54 @@
 // Copyright Greathorn Games Inc. All Rights Reserved.
 
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace GG
 {   
     public class CommandsFile
     {
-        public const string Extension = "gg.json";
+        public const string Extension = ".gg.json";
 
         [JsonPropertyName("actions")]
-        public required Action[] Actions;
+        public CommandAction[] Actions { get; set; }
 
-        public class Action
+        public class CommandAction
         {
             [JsonPropertyName("verb")]
-            public required string Identifier;
+            public string? Identifier { get; set;}
 
             [JsonPropertyName("command")]
-            public string? Command;
+            public string? Command { get; set; }
 
             [JsonPropertyName("description")]
-            public string? Description;
+            public string? Description { get; set; }
 
             [JsonPropertyName("actions")]
-            public Action[]? Actions;
+            public CommandAction[]? Actions { get; set; }
         }
 
-        public static void AddActions(Action[] actionBase, Dictionary<string, Action> data)
+
+        public string ToJson()
+        {
+            return JsonSerializer.Serialize<CommandsFile>(this);
+        }
+
+        public static CommandsFile? Get(string path)
+        {
+            string json = File.ReadAllText(path);
+            return JsonSerializer.Deserialize<CommandsFile>(json);
+        }
+
+        public static void BuildMap(CommandAction[] actionBase, Dictionary<string, CommandAction> data)
         {
             data ??= [];
 
             // TODO This doesnt do recruseive we need to pass the action to add too ? 
-            foreach(Action action in actionBase) {
+            foreach(CommandAction action in actionBase) {
                 data[action.Identifier] = action;
                 if(action.Actions != null && action.Actions.Length > 0)
                 {
-                    AddActions(action.Actions, data);
+                    BuildMap(action.Actions, data);
                 }
             }
         }

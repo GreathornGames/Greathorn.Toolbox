@@ -47,14 +47,21 @@ namespace Greathorn
                 string[] projectFolderCommands = Directory.GetFiles(settings.ProjectsFolder, $"*{CommandsFile.Extension}", SearchOption.AllDirectories);
 
 
-                Dictionary<string, CommandsFile.Action> parsedActions = [];
+                Dictionary<string, CommandsFile.CommandAction> parsedActions = [];
+
+                CommandsFile newSample = new CommandsFile();
+                newSample.Actions = new CommandsFile.CommandAction[2];
+                newSample.Actions[0] = new CommandsFile.CommandAction();
+                newSample.Actions[0].Identifier = "test";
+                newSample.Actions[1] = new CommandsFile.CommandAction();
+                newSample.Actions[1].Identifier = "test2";
+                string test = newSample.ToJson();
 
                 // Parse Programs
                 int programFolderCommandsCount = programFolderCommands.Length;
                 for(int i = 0; i < programFolderCommandsCount; i++)
                 {
-                    string json = File.ReadAllText(programFolderCommands[i]);
-                    CommandsFile? c = JsonSerializer.Deserialize<CommandsFile>(json);
+                    CommandsFile? c = CommandsFile.Get(programFolderCommands[i]);
                     if(c == null)
                     {
                         Log.WriteLine($"Unable to parse {programFolderCommands[i]}.", "JSON", ILogOutput.LogType.Error);
@@ -62,18 +69,17 @@ namespace Greathorn
                     }
                     else if(c.Actions == null || c.Actions.Length == 0)
                     {
-                        Log.WriteLine($"No actions found in {projectFolderCommands[i]}.", "JSON", ILogOutput.LogType.Info);
+                        Log.WriteLine($"No actions found in {programFolderCommands[i]}.", "JSON", ILogOutput.LogType.Info);
                         continue;
                     }
-                    CommandsFile.AddActions(c.Actions, parsedActions);
+                    CommandsFile.BuildMap(c.Actions, parsedActions);
                 }
 
                 // Parse Project
                 int projectFolderCommandsCount = projectFolderCommands.Length;
                 for (int i = 0; i < projectFolderCommandsCount; i++)
                 {
-                    string json = File.ReadAllText(projectFolderCommands[i]);
-                    CommandsFile? c = JsonSerializer.Deserialize<CommandsFile>(json);
+                    CommandsFile? c = CommandsFile.Get(projectFolderCommands[i]);
                     if (c == null)
                     {
                         Log.WriteLine($"Unable to parse {projectFolderCommands[i]}.", "JSON", ILogOutput.LogType.Error);
@@ -84,8 +90,11 @@ namespace Greathorn
                         Log.WriteLine($"No actions found in {projectFolderCommands[i]}.", "JSON", ILogOutput.LogType.Info);
                         continue;
                     }
-                    CommandsFile.AddActions(c.Actions, parsedActions);
+                    CommandsFile.BuildMap(c.Actions, parsedActions);
                 }
+
+
+
             }
             catch (Exception ex)
             {
