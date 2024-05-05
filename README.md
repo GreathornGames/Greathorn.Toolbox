@@ -32,6 +32,7 @@ The application operates normally without any provided arguments, however you ca
 | Argument | Description |
 | :-- | :-- |
 | `no-build` | Do not build projects. |
+| `no-clone` | Do not clone/update the downloaded source code. |
 | `no-workspace` | Do not run `WorkspaceSetup` after building projects. |
 | `quiet` | Run in quiet mode, not asking for user input. |
 
