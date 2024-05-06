@@ -13,6 +13,11 @@ namespace GG
     {
         readonly Dictionary<string, CommandMapAction> m_Map = [];
 
+        public bool HasCommands()
+        {
+            return m_Map.Count > 0;
+        }
+
         public class CommandMapAction
         {
             public string? Command;

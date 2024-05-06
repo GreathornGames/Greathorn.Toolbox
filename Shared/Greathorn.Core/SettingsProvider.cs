@@ -26,7 +26,7 @@ namespace Greathorn.Core
 
         public readonly string ProjectsFolder;
 
-        public readonly string GreathornCLIFolder;
+        public readonly string GreathornToolboxFolder;
         public readonly string GreathornDotNETFolder;
         public readonly string GreathornProgramsFolder;
 
@@ -43,7 +43,7 @@ namespace Greathorn.Core
             P4ConfigFile = Path.Combine(RootFolder, SettingsProvider.P4ConfigFileName);
             ProjectsFolder = Path.Combine(RootFolder, "Projects");
 
-            GreathornCLIFolder = Path.Combine(RootFolder, "Greathorn", "Source", "Programs", "Greathorn.CLI");
+            GreathornToolboxFolder = Path.Combine(RootFolder, "Greathorn", "Source", "Programs", "Greathorn.Toolbox");
             GreathornDotNETFolder = Path.Combine(RootFolder, "Greathorn", "Binaries", "DotNET");
             GreathornProgramsFolder = Path.Combine(RootFolder, "Greathorn", "Programs");
         }

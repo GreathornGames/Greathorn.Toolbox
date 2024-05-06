@@ -39,6 +39,7 @@ namespace Greathorn
 
                 UpdateSourceCode(framework, settings);
                 BuildSource(framework, settings);
+                SetupEnvironment(settings);
                 SetupPerforce(settings);
                 SetupVSCode(settings);
                 SetupExecutionFlags(framework, settings);
@@ -60,11 +61,11 @@ namespace Greathorn
                 return;
             }
            
-            string? branch = GitProvider.GetBranch(settings.GreathornCLIFolder);
+            string? branch = GitProvider.GetBranch(settings.GreathornToolboxFolder);
             branch ??= "main";
 
-            string localCommitHash = GitProvider.GetLocalCommit(settings.GreathornCLIFolder);
-            string? remoteCommitHash = GitProvider.GetRemoteCommit(settings.GreathornCLIFolder, branch);
+            string localCommitHash = GitProvider.GetLocalCommit(settings.GreathornToolboxFolder);
+            string? remoteCommitHash = GitProvider.GetRemoteCommit(settings.GreathornToolboxFolder, branch);
          
             if(localCommitHash == remoteCommitHash)
             {
@@ -75,10 +76,10 @@ namespace Greathorn
             {
                 Log.WriteLine($"Depot needs updating as the local {localCommitHash} differs from {remoteCommitHash}.", "SOURCE", ILogOutput.LogType.Info);
 #if DEBUG
-                Log.WriteLine("- This is being skipped due to being in DEBUG mode.");
+                Log.WriteLine("Skipping Cloning (Debug Mode) ...");
                 return;
 #else
-                GitProvider.UpdateRepo(settings.GreathornCLIFolder, branch);
+                GitProvider.UpdateRepo(settings.GreathornToolboxFolder, branch);
                 return;
 #endif
             }
@@ -92,8 +93,8 @@ namespace Greathorn
                 return;
             }
 
-            string localCommitHash = GitProvider.GetLocalCommit(settings.GreathornCLIFolder);
-            string builtTagFile = Path.Combine(settings.GreathornCLIFolder, SettingsProvider.BuildHashFileName);
+            string localCommitHash = GitProvider.GetLocalCommit(settings.GreathornToolboxFolder);
+            string builtTagFile = Path.Combine(settings.GreathornToolboxFolder, SettingsProvider.BuildHashFileName);
             bool shouldRebuild = !File.Exists(builtTagFile);
             if (!shouldRebuild)
             {
@@ -104,7 +105,7 @@ namespace Greathorn
             {
                 Log.WriteLine($"A rebuild of programs is needed.", "BUILD", ILogOutput.LogType.Notice);
 #if DEBUG
-                Log.WriteLine("- This is being skipped due to being in DEBUG mode.");
+                Log.WriteLine("Skipping Building (Debug Mode) ...");
 #else
                 ProcessUtil.SpawnSeperate("dotnet", $"{settings.BoostrapLibrary} quiet", null, true);
                 framework.Shutdown(true);
@@ -133,6 +134,24 @@ namespace Greathorn
                 Log.WriteLine($"Existing P4Config was found.", ILogOutput.LogType.Default);
             }
         }
+        static void SetupEnvironment(SettingsProvider settings)
+        {
+            bool restartShellsRequired = false;
+            Log.WriteLine("Setup Environment", ILogOutput.LogType.Notice);
+
+            string? existingMachinePath = System.Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
+            if(existingMachinePath != null && !existingMachinePath.Contains(settings.GreathornDotNETFolder))
+            {
+                Log.WriteLine($"Adding to PATH variable ...", ILogOutput.LogType.Default);
+                System.Environment.SetEnvironmentVariable("PATH", $"{existingMachinePath};{settings.GreathornDotNETFolder};", EnvironmentVariableTarget.Machine);
+                restartShellsRequired = true;
+            }
+
+            if(restartShellsRequired)
+            {
+                Log.WriteLine("Restarting of terminals required to pickup new environment variables.", ILogOutput.LogType.Info);
+            }
+        }
         static void SetupVSCode(SettingsProvider settings)
         {
             Log.WriteLine("Setup VSCode", ILogOutput.LogType.Notice);
@@ -140,17 +159,17 @@ namespace Greathorn
             if (!File.Exists(vscodePath))
             {
                 FileUtil.EnsureFileFolderHierarchyExists(vscodePath);
-
-                string shellSetup = Path.Combine(settings.GreathornDotNETFolder, "ShellSetup.exe").Replace("\\", "\\\\");
+                string ggPath = Path.Combine(settings.GreathornDotNETFolder, "GG.exe").Replace("\\", "\\\\");
                 File.WriteAllLines(vscodePath, [
                     "{",
+                        $"\t\"terminal.integrated.cwd\": \"{settings.GreathornDotNETFolder.Replace("\\", "\\\\")}\",",
                         "\t\"terminal.integrated.profiles.windows\": {",
                             "\t\t\"Command Prompt\": {",
-                                $"\t\t\t\"args\": [\"/K\", \"{shellSetup}\"]",
+                                $"\t\t\t\"args\": [\"/K\", \"{ggPath}\"]",
                             "\t\t},",
                             "\t\t\"PowerShell\": {",
-                                $"\t\t\t\"args\": [\"-NoExit\", \"{shellSetup}\", \"1\"]",
-                            "\t\t},",
+                                $"\t\t\t\"args\": [\"-NoExit\", \"{ggPath}\"]",
+                            "\t\t}",
                         "\t}",
                     "}"
                 ]);

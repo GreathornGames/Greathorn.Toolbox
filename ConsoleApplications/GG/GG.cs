@@ -37,7 +37,6 @@ namespace Greathorn
                 // Try to standardize our file/locations, etc.
                 SettingsProvider settings = new(workspaceRoot);
 
-
                 Log.AddLogOutput(new FileLogOutput(Path.Combine(settings.LogsFolder, "GG.log")));
 
                 // Find all command macros
@@ -87,6 +86,12 @@ namespace Greathorn
                     map.AddCommands(c);
                 }
 
+                if(!map.HasCommands())
+                {
+                    Log.WriteLine($"No actions found.", "JSON", ILogOutput.LogType.Info);
+                    return;
+                }
+
                 if (framework.Arguments.Arguments.Contains("help") || framework.Arguments.Arguments.Count == 0)
                 {
                     Log.WriteLine(map.GetOutput(), "GG", ILogOutput.LogType.Info);
@@ -117,7 +122,8 @@ namespace Greathorn
                             command = "cmd.exe";
                         }
 
-                        ProcessUtil.SpawnSeperate(command, arguments, workingDirectory);
+                        // GG will exit immediately following this 'start'.
+                        ProcessUtil.SpawnWithEnvironment(command, arguments, workingDirectory, GetEnvironmentVariables(settings));
                     }
                     else
                     {
@@ -129,6 +135,35 @@ namespace Greathorn
             {
                 framework.ExceptionHandler(ex);
             }
+        }
+
+        static Dictionary<string, string> GetEnvironmentVariables(SettingsProvider settings)
+        {
+            Dictionary<string, string> returnData = new()
+            {
+                // Universal flag that this was launched from GG
+                ["GG"] = "1",
+
+                ["DOTNET_CLI_TELEMETRY_OPTOUT"] = "true",
+
+                // Our own few things
+                ["Workspace"] = settings.RootFolder,
+                ["BatchFiles"] = settings.BuildBatchFilesFolder,
+                ["GGTemp"] = settings.TempFile,
+
+                // Some things UE uses
+                ["COMPUTERNAME"] = System.Environment.MachineName             
+            };
+
+            // P4 Config
+            if (File.Exists(settings.P4ConfigFile))
+            {
+                PerforceConfig config = new(settings.P4ConfigFile);
+                returnData["P4CLIENT"] = config.Client;
+                returnData["P4PORT"] = config.Port;
+            }
+
+            return returnData;
         }
     }
 }

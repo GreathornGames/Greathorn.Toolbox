@@ -57,7 +57,7 @@ namespace Greathorn
 				Console.WriteLine($"Workspace Root @ {workspaceRoot}");
 
                 // Build our source folder path
-                string sourceFolder = Path.Combine(workspaceRoot, "Greathorn", "Source", "Programs", "Greathorn.CLI");
+                string sourceFolder = Path.Combine(workspaceRoot, "Greathorn", "Source", "Programs", "Greathorn.Toolbox");
                 Console.WriteLine($"Source Folder @ {sourceFolder}");              
 
                 // Grab anything relevant from the command line args
@@ -106,12 +106,14 @@ namespace Greathorn
                 }
             }
 
-
-            Console.WriteLine("Settings");
-            Console.WriteLine($"\tClone\t\t{s_ShouldClone}");
-            Console.WriteLine($"\tBuild\t\t{s_ShouldBuild}");
-            Console.WriteLine($"\tSetup Workspace\t{s_ShouldSetupWorkspace}");
-            Console.WriteLine($"\tQuiet Mode\t{s_QuietMode}");
+            if (!s_QuietMode)
+            {
+                Console.WriteLine("Settings");
+                Console.WriteLine($"\tClone\t\t{s_ShouldClone}");
+                Console.WriteLine($"\tBuild\t\t{s_ShouldBuild}");
+                Console.WriteLine($"\tSetup Workspace\t{s_ShouldSetupWorkspace}");
+                Console.WriteLine($"\tQuiet Mode\t{s_QuietMode}");
+            }
         }
         static void CloneSource(string sourceFolder)
         {
@@ -135,6 +137,9 @@ namespace Greathorn
                 Directory.CreateDirectory(sourceFolderParent);
             }
 
+#if DEBUG
+            Console.WriteLine("Skipping Cloning (Debug Mode) ...");
+#else
             // Get or update the source
             if (Directory.Exists(Path.Combine(sourceFolder, ".git")))
             {
@@ -142,8 +147,9 @@ namespace Greathorn
             }
             else
             {
-                GitCheckoutRepo("https://github.com/GreathornGames/Greathorn.CLI.git", sourceFolder);
+                GitCheckoutRepo("https://github.com/GreathornGames/Greathorn.Toolbox.git", sourceFolder);
             }
+#endif
         }
         static void BuildSource(string sourceFolder)
         {
@@ -204,7 +210,7 @@ namespace Greathorn
             }
             ProcessElevate("dotnet", workspaceRoot, args);
         }
-        #endregion
+#endregion
 
         #region Helpers
         static string? GetWorkspaceRoot(string? workingDirectory = null)

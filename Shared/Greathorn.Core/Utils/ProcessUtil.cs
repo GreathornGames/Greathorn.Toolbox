@@ -13,15 +13,20 @@ namespace Greathorn.Core.Utils
 {
 	public static class ProcessUtil
 	{
-		public static void SetupEnvironmentVariables(this Process process)
+		public static void AddDefaultEnvironmentVariables(this Process process)
 		{
+            if(process.StartInfo.UseShellExecute)
+            {
+                Log.WriteLine("Unable to add environment variables to shell executed process.", "PROCESS", ILogOutput.LogType.Error);
+                return;
+            }
 			process.StartInfo.EnvironmentVariables["DOTNET_CLI_TELEMETRY_OPTOUT"] = "true";
 		}
 
         public static bool Spawn(string executablePath, string? arguments, string? workingDirectory)
 		{
 			using Process childProcess = new Process();
-			SetupEnvironmentVariables(childProcess);
+			AddDefaultEnvironmentVariables(childProcess);
             childProcess.StartInfo.WorkingDirectory = string.IsNullOrEmpty(workingDirectory) ? null : workingDirectory;
 			childProcess.StartInfo.FileName = executablePath;
 			childProcess.StartInfo.Arguments = string.IsNullOrEmpty(arguments) ? string.Empty : arguments;
@@ -32,7 +37,7 @@ namespace Greathorn.Core.Utils
         public static bool SpawnHidden(string executablePath, string? arguments)
 		{
 			using Process childProcess = new Process();
-			SetupEnvironmentVariables(childProcess);
+			AddDefaultEnvironmentVariables(childProcess);
 			childProcess.StartInfo.FileName = executablePath;
 			childProcess.StartInfo.Arguments = string.IsNullOrEmpty(arguments) ? "" : arguments;
 			childProcess.StartInfo.UseShellExecute = false;
@@ -53,6 +58,25 @@ namespace Greathorn.Core.Utils
             childProcess.StartInfo.FileName = executablePath;
             childProcess.StartInfo.Arguments = string.IsNullOrEmpty(arguments) ? "" : arguments;
             childProcess.StartInfo.UseShellExecute = true;
+            return childProcess.Start();
+        }
+
+        public static bool SpawnWithEnvironment(string executablePath, string? arguments, string? workingDirectory, Dictionary<string, string>? environmentVariables)
+        {
+            using Process childProcess = new Process();
+            childProcess.StartInfo.WorkingDirectory = string.IsNullOrEmpty(workingDirectory) ? null : workingDirectory;
+            childProcess.StartInfo.FileName = executablePath;
+            childProcess.StartInfo.Arguments = string.IsNullOrEmpty(arguments) ? "" : arguments;
+            childProcess.StartInfo.UseShellExecute = false;
+            childProcess.AddDefaultEnvironmentVariables();
+            // Add custom
+            if(environmentVariables != null && environmentVariables.Count > 0)
+            {
+                foreach(KeyValuePair<string,string> kvp in environmentVariables)
+                {
+                    childProcess.StartInfo.EnvironmentVariables[kvp.Key] = kvp.Value;
+                }
+            }
             return childProcess.Start();
         }
 
@@ -86,7 +110,7 @@ namespace Greathorn.Core.Utils
 				}
 			}
 
-			SetupEnvironmentVariables(childProcess);
+			AddDefaultEnvironmentVariables(childProcess);
 			if (workingDirectory != null)
 			{
 				childProcess.StartInfo.WorkingDirectory = workingDirectory;
@@ -141,7 +165,7 @@ namespace Greathorn.Core.Utils
 				}
 			}
 
-			SetupEnvironmentVariables(childProcess);
+			AddDefaultEnvironmentVariables(childProcess);
 			if (workingDirectory != null)
 			{
 				childProcess.StartInfo.WorkingDirectory = workingDirectory;

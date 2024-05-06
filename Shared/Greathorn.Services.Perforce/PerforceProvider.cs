@@ -1118,7 +1118,7 @@ namespace Greathorn.Services.Perforce
             MemoryStream memoryStream = new MemoryStream();
             using (Process process = new Process())
             {
-                process.SetupEnvironmentVariables();
+                process.AddDefaultEnvironmentVariables();
                 process.StartInfo.FileName = GetExecutablePath();
                 process.StartInfo.Arguments =
                     GetFullCommandLine("-G " + commandLine, options | CommandOptions.NoChannels);
