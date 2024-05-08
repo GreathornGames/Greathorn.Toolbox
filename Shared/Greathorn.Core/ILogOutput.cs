@@ -15,6 +15,7 @@ namespace Greathorn.Core
             Notice,
             Info,
             ExternalProcess,
+            Warning,
             Error
         }
 
@@ -28,6 +29,8 @@ namespace Greathorn.Core
                     return "INFO";
                 case LogType.ExternalProcess:
                     return "EXTERNAL";
+                case LogType.Warning:
+                    return "WARNING";
                 case LogType.Error:
                     return "ERROR";
                 default:

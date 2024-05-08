@@ -48,7 +48,7 @@ The launched commands are ran non-elevated with numerous instance environment va
 This application sets up a users workspace just how we want it. 
 
 - Enviornment path
-- P4Config
+- P4Config / P4V custom tools
 - Updates and builds Greathorn.Toolbox
 - Execution flags on unix systems
 - UE's prerequisites and version selector

@@ -15,6 +15,7 @@ namespace Greathorn.Core
         public const string P4CharacterSet = "auto";
         public const string P4IgnoreFileName = "p4ignore.txt";
         public const string P4ConfigFileName = "p4config.txt";
+        public const string P4CustomToolsFileName = "p4v-custom-tools.xml";
         public const string BuildHashFileName = "GG_BUILD_SHA";
 
         public readonly string BoostrapLibrary;
@@ -25,6 +26,7 @@ namespace Greathorn.Core
         public readonly string P4ConfigFile;
 
         public readonly string ProjectsFolder;
+        public readonly string GreathornFolder;
 
         public readonly string GreathornToolboxFolder;
         public readonly string GreathornDotNETFolder;
@@ -34,7 +36,8 @@ namespace Greathorn.Core
         {
             RootFolder = root;
 
-            BoostrapLibrary = Path.Combine(RootFolder, "Greathorn", "Binaries", "Bootstrap", "Bootstrap.dll");
+            GreathornFolder = Path.Combine(RootFolder, "Greathorn");
+            BoostrapLibrary = Path.Combine(GreathornFolder, "Binaries", "Bootstrap", "Bootstrap.dll");
 
             LogsFolder = Path.Combine(RootFolder, "Logs");
             BuildBatchFilesFolder = Path.Combine(RootFolder, "Engine", "Build", "BatchFiles");
@@ -43,9 +46,9 @@ namespace Greathorn.Core
             P4ConfigFile = Path.Combine(RootFolder, SettingsProvider.P4ConfigFileName);
             ProjectsFolder = Path.Combine(RootFolder, "Projects");
 
-            GreathornToolboxFolder = Path.Combine(RootFolder, "Greathorn", "Source", "Programs", "Greathorn.Toolbox");
-            GreathornDotNETFolder = Path.Combine(RootFolder, "Greathorn", "Binaries", "DotNET");
-            GreathornProgramsFolder = Path.Combine(RootFolder, "Greathorn", "Programs");
+            GreathornToolboxFolder = Path.Combine(GreathornFolder, "Source", "Programs", "Greathorn.Toolbox");
+            GreathornDotNETFolder = Path.Combine(GreathornFolder, "Binaries", "DotNET");
+            GreathornProgramsFolder = Path.Combine(GreathornFolder, "Programs");
         }
 
 

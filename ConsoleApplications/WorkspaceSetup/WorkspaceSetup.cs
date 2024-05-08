@@ -6,7 +6,7 @@ using Greathorn.Services.Perforce;
 
 namespace Greathorn
 {
-	internal class WorkspaceSetup
+    internal class WorkspaceSetup
 	{
         static void Main()
         {
@@ -133,6 +133,29 @@ namespace Greathorn
                 // We're not going to overwrite, but maybe there is a todo here where we load it and validate?
                 Log.WriteLine($"Existing P4Config was found.", ILogOutput.LogType.Default);
             }
+
+            Log.WriteLine("Install P4V Tools ...", ILogOutput.LogType.Default);
+            CustomTools.CustomToolDefList baseCustomTools = CustomTools.Get();
+
+            // We need to find all the extra tools throughout the workspace
+            List<string> p4tools =
+            [
+                .. Directory.GetFiles(settings.GreathornFolder, SettingsProvider.P4CustomToolsFileName, SearchOption.AllDirectories),
+                .. Directory.GetFiles(settings.ProjectsFolder, SettingsProvider.P4CustomToolsFileName, SearchOption.AllDirectories),
+            ];
+            int foundTools = p4tools.Count;
+            for(int i = 0; i < foundTools; i++)
+            {
+                string toolPath = p4tools[i];
+                Log.WriteLine($"Adding {toolPath} ...");
+                CustomTools.CustomToolDefList customTools = CustomTools.Get(toolPath);
+                baseCustomTools.AddOrReplace(customTools);
+            }
+            if(foundTools > 0)
+            {
+                baseCustomTools.Output(CustomTools.ConfigFile);
+            }
+
         }
         static void SetupEnvironment(SettingsProvider settings)
         {

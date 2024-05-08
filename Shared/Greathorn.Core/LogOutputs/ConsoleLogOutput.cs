@@ -28,6 +28,7 @@ namespace Greathorn.Core.Loggers
 				LogType.Notice => ConsoleColor.DarkGreen,
 				LogType.Error => ConsoleColor.DarkRed,
 				LogType.Info => ConsoleColor.DarkCyan,
+                LogType.Warning => ConsoleColor.DarkYellow,
 				LogType.ExternalProcess => ConsoleColor.DarkGray,
 				_ => DefaultForegroundColor,
 			};
