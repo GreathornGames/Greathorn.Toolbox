@@ -104,16 +104,16 @@ namespace Greathorn.Services.Perforce
         public class Definition
         {
             [XmlElement(ElementName = "Name")]
-            public string Name { get; set; }
+            public string? Name { get; set; }
 
             [XmlElement(ElementName = "Command")]
-            public string Command { get; set; }
+            public string? Command { get; set; }
 
             [XmlElement(ElementName = "Arguments")]
-            public string Arguments { get; set; }
+            public string? Arguments { get; set; }
 
             [XmlElement(ElementName = "Shortcut")]
-            public object Shortcut { get; set; }
+            public object? Shortcut { get; set; }
         }
 
         [XmlRoot(ElementName = "Console")]
@@ -127,10 +127,10 @@ namespace Greathorn.Services.Perforce
         public class CustomToolDef
         {
             [XmlElement(ElementName = "Definition")]
-            public Definition Definition { get; set; }
+            public Definition? Definition { get; set; }
 
             [XmlElement(ElementName = "Console")]
-            public Console Console { get; set; }
+            public Console? Console { get; set; }
 
             [XmlElement(ElementName = "AddToContext")]
             public bool AddToContext { get; set; } = false;
@@ -149,17 +149,17 @@ namespace Greathorn.Services.Perforce
             public string VarName { get; set; } = "customtooldeflist";
 
             [XmlText]
-            public string Text { get; set; }
+            public string? Text { get; set; }
         }
 
         [XmlRoot(ElementName = "CustomToolFolder")]
         public class CustomToolFolder
         {
             [XmlElement(ElementName = "Name")]
-            public string Name { get; set; }
+            public string? Name { get; set; }
 
             [XmlElement(ElementName = "CustomToolDefList")]
-            public CustomToolDefList CustomToolDefList { get; set; }
+            public CustomToolDefList? CustomToolDefList { get; set; }
         }
         #endregion
     }
