@@ -12,6 +12,7 @@
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <AssemblyVersion>0.5.0.1</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
+    <Configurations>Debug;Release;Workspace</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

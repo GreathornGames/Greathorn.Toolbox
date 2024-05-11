@@ -8,14 +8,12 @@ namespace KeepAlive
 {
     public class KeepAliveConfig
     {
-        public const string JsonFile = "keepalive.json";
         public const int UpdateSleep = 1000 * 1;
         public const int IssueSleep = 1000 * 10;
         public const int StartSleep = 1000 * 2;
 
         public string Application { get; set; } = "C:\\Program Files\\Epic Games\\Horde\\Agent\\HordeAgent.exe";
         public string? Arguments { get; set; }
-        public string? BasePath { get; set; }
         public string? WorkingDirectory { get; set; } = "C:\\Program Files\\Epic Games\\Horde\\Agent\\";
         public string ProcessInfoPath { get; set; } = Path.Combine(Path.GetTempPath(), "HordeAgent.pid");
         public int SleepMilliseconds { get; set; }
@@ -25,12 +23,9 @@ namespace KeepAlive
         public bool CheckResponding { get; set; } = true;
         public bool CheckHasExited { get; set; } = true;
 
-        string? m_FilePath;
-        string? m_FileContent;
-
         public static KeepAliveConfig Get(string? jsonPath = null)
         {
-            JsonSerializerOptions jsonSettings = new JsonSerializerOptions()
+            JsonSerializerOptions jsonSettings = new()
             {
                 AllowTrailingCommas = true,
                 DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
@@ -42,16 +37,12 @@ namespace KeepAlive
                 KeepAliveConfig? foundConfig = null;
                 if (jsonPath == null)
                 {
-                    string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, JsonFile);
+                    string filePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "keepalive.json");
                     if (!File.Exists(filePath)) return new KeepAliveConfig();
 
                     string content = File.ReadAllText(filePath);
 
                     foundConfig = JsonSerializer.Deserialize<KeepAliveConfig>(content, jsonSettings)!;
-
-
-                    foundConfig.m_FilePath = filePath;
-                    foundConfig.m_FileContent = content;
                 }
                 else
                 {
@@ -59,10 +50,8 @@ namespace KeepAlive
 
                     string content = File.ReadAllText(jsonPath);
 
-                    foundConfig = JsonSerializer.Deserialize<KeepAliveConfig>(content, jsonSettings)!;
-
-                    foundConfig.m_FilePath = jsonPath;
-                    foundConfig.m_FileContent = content;
+                    foundConfig = JsonSerializer.Deserialize<KeepAliveConfig>(content, jsonSettings);
+                    if (foundConfig == null) return Get();
                 }
 
                 CleanUpConfig(foundConfig);
@@ -81,19 +70,15 @@ namespace KeepAlive
 
         public static void CleanUpConfig(KeepAliveConfig config)
         {
-            if (config.BasePath == null)
-            {
-                config.BasePath = AppDomain.CurrentDomain.BaseDirectory;
-            }
-
+            string appName = Path.GetFileNameWithoutExtension(config.Application);
             if (string.IsNullOrEmpty(config.ProcessInfoPath))
             {
-                config.ProcessInfoPath = Path.Combine(config.BasePath, "keepalive.pid");
+                config.ProcessInfoPath = Path.Combine(Path.GetTempPath(), $"{appName}.pid");
             }
 
             if (string.IsNullOrEmpty(config.WorkingDirectory) || !Directory.Exists(config.WorkingDirectory))
             {
-                config.WorkingDirectory = Directory.GetParent(config.Application).FullName;
+                config.WorkingDirectory = Directory.GetParent(config.Application)?.FullName;
             }
 
             if (config.SleepMilliseconds <= 0)
@@ -117,6 +102,12 @@ namespace KeepAlive
             if (string.IsNullOrEmpty(Application))
             {
                 Log.WriteLine("No application found", ILogOutput.LogType.Error);
+                return false;
+            }
+
+            if(!File.Exists(Application))
+            {
+                Log.WriteLine("No application found at provided path.", ILogOutput.LogType.Error);
                 return false;
             }
 

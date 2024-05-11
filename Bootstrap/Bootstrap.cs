@@ -182,7 +182,7 @@ namespace Greathorn
             for (int i = 0; i < compileCount; i++)
             {
                 Console.WriteLine($"Building {parsedFiles[i]} ...");
-                exitCode = ProcessExecute("dotnet", sourceFolder, $"build {parsedFiles[i]} /property:Configuration=Release /property:Platform=AnyCPU /t:Rebuild", null, (processIdentifier, line) =>
+                exitCode = ProcessExecute("dotnet", sourceFolder, $"build {parsedFiles[i]} /property:Configuration=Workspace /property:Platform=AnyCPU /t:Rebuild", null, (processIdentifier, line) =>
                 {
                     Console.WriteLine($"[{processIdentifier}]\t{line}");
                 });

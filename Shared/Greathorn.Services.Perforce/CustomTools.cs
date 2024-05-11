@@ -14,10 +14,7 @@ namespace Greathorn.Services.Perforce
 
         public static CustomToolDefList Get(string? customPath = null)
         {
-            if (customPath == null)
-            {
-                customPath = ConfigFile;
-            }
+            customPath ??= ConfigFile;
 
             if (!File.Exists(customPath))
             {
@@ -26,24 +23,22 @@ namespace Greathorn.Services.Perforce
             }
 
             XmlSerializer serializer = new XmlSerializer(typeof(CustomToolDefList));
-            using (StreamReader reader = new StreamReader(customPath))
+            using StreamReader reader = new StreamReader(customPath);
+            CustomToolDefList? returnObject;
+            try
             {
-                CustomToolDefList? returnObject;
-                try
-                {
-                    returnObject = (CustomToolDefList)serializer.Deserialize(reader);
-                }
-                catch
-                {
-                    Log.WriteLine($"Unable to parse provided tool file @ {customPath}, returning empty data.", "PERFORCE", ILogOutput.LogType.Warning);
-                    returnObject = new CustomToolDefList();
-                }
-                return returnObject;
+                returnObject = (CustomToolDefList)serializer.Deserialize(reader);
             }
+            catch
+            {
+                Log.WriteLine($"Unable to parse provided tool file @ {customPath}, returning empty data.", "PERFORCE", ILogOutput.LogType.Warning);
+                returnObject = new CustomToolDefList();
+            }
+            return returnObject;
         }
 
 
-        public static void AddOrReplace(this CustomToolDefList lhs, CustomToolDefList rhs, bool replaceTopLevelFolder = true)
+        public static void AddOrReplace(this CustomToolDefList lhs, CustomToolDefList rhs)
         {
             // Handle Folders
             int rhsFolderCount = rhs.CustomToolFolder.Count;
@@ -74,7 +69,7 @@ namespace Greathorn.Services.Perforce
                 for (int i = 0; i < lsToolCount; i++)
                 {
 
-                    if (lhs.CustomToolDef[i].Definition.Name == rhs.CustomToolDef[j].Definition.Name)
+                    if (lhs.CustomToolDef[i]?.Definition?.Name == rhs.CustomToolDef[j]?.Definition?.Name)
                     {
                         lhs.CustomToolDef[i] = rhs.CustomToolDef[j];
                         found = true;
@@ -93,10 +88,8 @@ namespace Greathorn.Services.Perforce
 
             XmlWriterSettings settings = new XmlWriterSettings { Indent = true };
             XmlSerializer serializer = new XmlSerializer(typeof(CustomToolDefList));
-            using (XmlWriter writer = XmlWriter.Create(path, settings))
-            {
-                serializer.Serialize(writer, definition);
-            }
+            using XmlWriter writer = XmlWriter.Create(path, settings);
+            serializer.Serialize(writer, definition);
         }
 
         #region File DOM Definition

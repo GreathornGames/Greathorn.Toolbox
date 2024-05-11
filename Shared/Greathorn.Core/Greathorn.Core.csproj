@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Configurations>Debug;Release;Workspace</Configurations>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -12,6 +13,10 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Workspace|AnyCPU'">
     <IsPublishable>False</IsPublishable>
   </PropertyGroup>
 

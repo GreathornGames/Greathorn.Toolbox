@@ -10,6 +10,7 @@
     <StartupObject>Greathorn.KeepAlive</StartupObject>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+    <Configurations>Debug;Release;Workspace</Configurations>
   </PropertyGroup>
 
 
@@ -18,6 +19,10 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <IsPublishable>False</IsPublishable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Workspace|AnyCPU'">
     <IsPublishable>False</IsPublishable>
     <OutputPath>..\..\..\..\..\Binaries\DotNET</OutputPath>
   </PropertyGroup>

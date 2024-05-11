@@ -13,14 +13,14 @@ namespace Greathorn
         static ProcessMonitor? s_ProcessMonitor = null;
         static KeepAliveConfig? s_Settings;
 
-        static void Main(string[] args)
+        static void Main()
         {
             using ConsoleApplication framework = new(
              new Greathorn.Core.ConsoleApplicationSettings()
              {
                  DefaultLogCategory = "KEEPALIVE",
                  LogOutputs = [new Greathorn.Core.Loggers.ConsoleLogOutput()],
-                 PauseOnExit = false,
+                 PauseOnExit = true,
                  RequiresElevatedAccess = false,
              });
 
@@ -37,9 +37,12 @@ namespace Greathorn
                 }
 
                 // Ok no argument, use default
-                if(s_Settings == null)
+                s_Settings ??= KeepAliveConfig.Get();
+
+                // Bad settings, let's bounce.
+                if (!s_Settings.IsValid())
                 {
-                    s_Settings =  KeepAliveConfig.Get();
+                    framework.Shutdown();
                 }
 
                 // Setup exit logic
@@ -110,7 +113,7 @@ namespace Greathorn
         {
             if (s_Settings == null) return;
 
-            Process startProcess = new Process();
+            Process startProcess = new();
 
             startProcess.StartInfo.WorkingDirectory = s_Settings.WorkingDirectory;
             startProcess.StartInfo.FileName = s_Settings.Application;
@@ -124,7 +127,7 @@ namespace Greathorn
 
             s_ProcessMonitor = new ProcessMonitor(startProcess);
 
-            Log.WriteLine($"Started with PID of {startProcess.Id.ToString()}");
+            Log.WriteLine($"Started with PID of {startProcess.Id}");
             File.WriteAllText(s_Settings.ProcessInfoPath, startProcess.Id.ToString());
         }
 

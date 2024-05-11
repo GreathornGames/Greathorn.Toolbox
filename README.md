@@ -68,4 +68,4 @@ The application operates normally without any provided arguments, however you ca
 
 ## Development
 
-> It is important to keep your IDE building in `DEBUG` mode when actively developing as both `Bootstrap` and `Workspace` have destructive actions which will wipe out any changes to the source code if ran in `RELEASE` mode.
+> It is important to keep your IDE building in `DEBUG` mode when actively developing as both `Bootstrap` and `Workspace` have destructive actions which will wipe out any changes to the source code if ran in `RELEASE` or `WORKSPACE` mode.
