@@ -43,6 +43,7 @@ namespace Greathorn
                 SetupPerforce(settings);
                 SetupVSCode(settings);
                 SetupExecutionFlags(framework, settings);
+                SetupSecurityExclusions(framework, settings);
                 SetupUnrealEngine(framework, settings);
 
             }
@@ -200,6 +201,7 @@ namespace Greathorn
         }
         static void SetupExecutionFlags(ConsoleApplication framework, SettingsProvider settings)
         {
+            Log.WriteLine("Ensuring Execution Flags", ILogOutput.LogType.Notice);
             // Ensure executable flags are setup across the workspace
             switch (framework.Platform.OperatingSystem)
             {
@@ -219,6 +221,18 @@ namespace Greathorn
                     break;
             }
         }
+        static void SetupSecurityExclusions(ConsoleApplication framework, SettingsProvider settings)
+        {
+            Log.WriteLine("Adding Security Exclusions", ILogOutput.LogType.Notice);
+            switch (framework.Platform.OperatingSystem)
+            {
+                case Greathorn.Core.Modules.PlatformModule.PlatformType.Windows:
+                    ProcessUtil.Elevate("powershell", settings.RootFolder,
+                        $"-inputformat none -outputformat none -NonInteractive -Command Add-MpPreference -ExclusionPath \"{settings.RootFolder}\"");
+                    break;
+            } 
+        }
+
         static void SetupUnrealEngine(ConsoleApplication framework, SettingsProvider settings)
         {
             Log.WriteLine("Setup Unreal Engine", ILogOutput.LogType.Notice);

@@ -7,7 +7,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Greathorn.Core.Utils
 {
