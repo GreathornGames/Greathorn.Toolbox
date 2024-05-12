@@ -43,6 +43,14 @@ A command synthesizer application which searches for `*.gg.json` files in `\Grea
 
 The launched commands are ran non-elevated with numerous instance environment variables set.
 
+### KeepAlive
+
+An application designed to keep a launched application running, much like a service. Useful for game server clients, but more specifically in our case, Horde Agents.
+
+By keeping the running application in user space, it has access to graphical resources and is considered *interactive* by Horde, and therefore can be used for Gauntlet automated testing.
+
+The default configuration will launch the locally installed Horde Agent; it is important to disable the service version (the tray application is also not needed). A path can be provided by argument to a json configuration file which implements `KeepAliveConfig`.
+
 ### WorkspaceSetup
 
 This application sets up a users workspace just how we want it. 
@@ -51,6 +59,7 @@ This application sets up a users workspace just how we want it.
 - P4Config / P4V custom tools
 - Updates and builds Greathorn.Toolbox
 - Execution flags on unix systems
+- Add security exclusions for the workspace folder
 - UE's prerequisites and version selector
 
 > This application must be ran at an elevated level; a UAC request will be triggered by the bundled manifest in the executable.
