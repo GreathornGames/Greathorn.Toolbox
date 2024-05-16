@@ -321,7 +321,14 @@ namespace Greathorn
             if (s_QuietMode) return;
 
             Console.WriteLine("Press Any Key To Continue ...");
-            Console.ReadKey();
+            try
+            {
+                Console.ReadKey();
+            }
+            catch
+            {
+
+            }
         }
         static int ProcessExecute(string executablePath, string? workingDirectory, string? arguments, string? input, Action<int, string> outputLine)
         {
