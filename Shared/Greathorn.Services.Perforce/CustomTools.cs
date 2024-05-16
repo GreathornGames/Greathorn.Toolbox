@@ -127,6 +127,8 @@ namespace Greathorn.Services.Perforce
 
             [XmlElement(ElementName = "AddToContext")]
             public bool AddToContext { get; set; } = false;
+            [XmlElement(ElementName = "Refresh")]
+            public bool Refresh { get; set; } = false;
         }
 
         [XmlRoot(ElementName = "CustomToolDefList")]
