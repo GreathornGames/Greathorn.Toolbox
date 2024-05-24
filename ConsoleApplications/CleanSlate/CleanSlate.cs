@@ -1,6 +1,5 @@
 using Greathorn.Core;
 using Greathorn.Core.Loggers;
-using Greathorn.Core.Utils;
 using Greathorn.Services.Perforce;
 
 namespace Greathorn
@@ -15,8 +14,7 @@ namespace Greathorn
             new Greathorn.Core.ConsoleApplicationSettings()
             {
                 DefaultLogCategory = "CLEANSLATE",
-                LogOutputs = [new Greathorn.Core.Loggers.ConsoleLogOutput()],
-                PauseOnExit = true,
+                LogOutputs = [new Greathorn.Core.Loggers.ConsoleLogOutput()]
             });
 
             try
@@ -87,6 +85,7 @@ namespace Greathorn
             Log.WriteLine("Clearing Project Plugin Artifacts ...", ILogOutput.LogType.Default);
             string[] projectDirectories = Directory.GetDirectories(settingsProvider.ProjectsFolder);
             int projectCount = projectDirectories.Length;
+            Log.WriteLine($"Found  {projectCount} Projects.", ILogOutput.LogType.Default);
             for (int i = 0; i < projectCount; i++)
             {
                 string projectDirectory = projectDirectories[i];
@@ -95,11 +94,13 @@ namespace Greathorn
                 {
                     string[] pluginDefinitions = Directory.GetFiles(pluginBaseDirectory, "*.uplugin", SearchOption.AllDirectories);
                     int pluginDefinitionsCount = pluginDefinitions.Length;
+                    Log.WriteLine($"Found  {pluginDefinitionsCount} plugins in {pluginBaseDirectory}.", ILogOutput.LogType.Default);
                     for (int j = 0; j < pluginDefinitionsCount; j++)
                     {
-                        string? pluginFolder = Path.GetDirectoryName(pluginDefinitions[i]);
+                        string? pluginFolder = Path.GetDirectoryName(pluginDefinitions[j]);
                         if (pluginFolder != null)
                         {
+                            Log.WriteLine($"Evaluating {pluginFolder} ...", ILogOutput.LogType.Default);
                             string intermediateFolder = Path.Combine(pluginFolder, "Intermediate");
                             if (Path.Exists(intermediateFolder))
                             {

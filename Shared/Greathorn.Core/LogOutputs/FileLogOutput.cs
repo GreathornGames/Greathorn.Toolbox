@@ -11,7 +11,7 @@ namespace Greathorn.Core.Loggers
 
         public FileLogOutput(string folder, string logName)
         {
-            string path = Path.Combine(folder, $"{logName}_{DateTime.Now.ToString("'yyyy''MM''d'_'HH''mm''ss'_'fffffff'")}.log");
+            string path = Path.Combine(folder, $"{logName}-{DateTime.Now.ToString("yyyyMMdd_HHmmssfffffff")}.log");
             FileUtil.EnsureFileFolderHierarchyExists(path);
             m_Writer = File.CreateText(path);
         }
