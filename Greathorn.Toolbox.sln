@@ -29,7 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{10E21594-D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeepAlive", "ConsoleApplications\KeepAlive\KeepAlive.csproj", "{8BE7026A-5BDB-4E99-A21B-808FABB7BDDB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanSlate", "ConsoleApplications\CleanSlate\CleanSlate.csproj", "{13787904-BC4A-41D4-A3DA-5A3320BE35C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanSlate", "ConsoleApplications\CleanSlate\CleanSlate.csproj", "{13787904-BC4A-41D4-A3DA-5A3320BE35C4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -83,8 +83,8 @@ Global
 		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Workspace|Any CPU.ActiveCfg = Debug|Any CPU
-		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Workspace|Any CPU.Build.0 = Debug|Any CPU
+		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Workspace|Any CPU.ActiveCfg = Workspace|Any CPU
+		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Workspace|Any CPU.Build.0 = Workspace|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
