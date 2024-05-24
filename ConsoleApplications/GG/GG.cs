@@ -37,7 +37,7 @@ namespace Greathorn
                 // Try to standardize our file/locations, etc.
                 SettingsProvider settings = new(workspaceRoot);
 
-                Log.AddLogOutput(new FileLogOutput(Path.Combine(settings.LogsFolder, "GG.log")));
+                Log.AddLogOutput(new FileLogOutput(settings.LogsFolder, "GG"));
 
                 // Find all command macros
                 string ggProgramFolder = Path.Combine(settings.GreathornProgramsFolder, "GG");
@@ -92,7 +92,7 @@ namespace Greathorn
                     return;
                 }
 
-                if (framework.Arguments.Arguments.Contains("help") || framework.Arguments.Arguments.Count == 0)
+                if (framework.Arguments.BaseArguments.Contains("help") || framework.Arguments.BaseArguments.Count == 0)
                 {
                     Log.WriteLine(map.GetOutput(), "GG", ILogOutput.LogType.Info);
                 }

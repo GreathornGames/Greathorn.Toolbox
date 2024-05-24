@@ -27,9 +27,9 @@ namespace Greathorn
             try
             {
                 // Only argument is the path to a settings file
-                if(framework.Arguments.Arguments.Count  > 0)
+                if(framework.Arguments.BaseArguments.Count  > 0)
                 {
-                    string arg = framework.Arguments.Arguments[0];
+                    string arg = framework.Arguments.BaseArguments[0];
                     if(File.Exists(arg))
                     {
                         s_Settings = KeepAliveConfig.Get(arg);

@@ -1,4 +1,5 @@
 // Copyright Greathorn Games Inc. All Rights Reserved.
+using System;
 using System.IO;
 using Greathorn.Core.Utils;
 
@@ -8,13 +9,9 @@ namespace Greathorn.Core.Loggers
     {
         readonly StreamWriter m_Writer;
 
-        public FileLogOutput(string path)
+        public FileLogOutput(string folder, string logName)
         {
-            if(File.Exists(path))
-            {
-                File.Copy(path, $"{path}.old", true);
-            }
-
+            string path = Path.Combine(folder, $"{logName}_{DateTime.Now.ToString("'yyyy''MM''d'_'HH''mm''ss'_'fffffff'")}.log");
             FileUtil.EnsureFileFolderHierarchyExists(path);
             m_Writer = File.CreateText(path);
         }

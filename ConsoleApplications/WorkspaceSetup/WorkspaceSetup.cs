@@ -34,7 +34,7 @@ namespace Greathorn
                 SettingsProvider settings = new(workspaceRoot);
 
 
-                Log.AddLogOutput(new FileLogOutput(Path.Combine(settings.LogsFolder, "WorkspaceSetup.log")));
+                Log.AddLogOutput(new FileLogOutput(settings.LogsFolder, "WorkspaceSetup"));
                 settings.Output();
 
                 UpdateSourceCode(framework, settings);
@@ -56,7 +56,7 @@ namespace Greathorn
         #region Process
         static void UpdateSourceCode(ConsoleApplication framework, SettingsProvider settings)
         {
-            if(framework.Arguments.Arguments.Contains("no-source"))
+            if(framework.Arguments.BaseArguments.Contains("no-source"))
             {
                 Log.WriteLine("Skipping Source Check (Argument) ...", "SOURCE", ILogOutput.LogType.Default);
                 return;
@@ -88,7 +88,7 @@ namespace Greathorn
 
         static void BuildSource(ConsoleApplication framework, SettingsProvider settings)
         {
-            if (framework.Arguments.Arguments.Contains("no-build"))
+            if (framework.Arguments.BaseArguments.Contains("no-build"))
             {
                 Log.WriteLine("Skipping Build Check (Argument) ...", "BUILD", ILogOutput.LogType.Default);
                 return;

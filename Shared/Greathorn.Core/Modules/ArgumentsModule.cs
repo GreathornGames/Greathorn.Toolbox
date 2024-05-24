@@ -10,7 +10,7 @@ namespace Greathorn.Core.Modules
 	{
 		private const string k_LogCategory = "ARGS";
        
-		public readonly List<string> Arguments = new List<string>();
+		public readonly List<string> BaseArguments = new List<string>();
 		public readonly Dictionary<string, string> OverrideArguments = new Dictionary<string, string>();
 
 		public ArgumentsModule()
@@ -23,33 +23,33 @@ namespace Greathorn.Core.Modules
 				// Quoted Argument that do not need to be
 				if (arg.StartsWith("\"") && arg.EndsWith("\"") && !arg.Contains(' '))
 				{
-					Arguments.Add(arg[1..^1]);
+					BaseArguments.Add(arg[1..^1]);
 				}
 				else
 				{
-					Arguments.Add(arg);
+					BaseArguments.Add(arg);
 				}
 			}
 
 			// Look for arguments that come in that need to be spliced into one with a quote
-			int argCount = Arguments.Count - 1;
+			int argCount = BaseArguments.Count - 1;
 			List<int> removeIndices = new List<int>();
 			if (argCount >= 2)
 			{
 				for (int i = 0; i < argCount; i++)
 				{
-					if (Arguments[i].StartsWith("\"") && !Arguments[i].EndsWith("\""))
+					if (BaseArguments[i].StartsWith("\"") && !BaseArguments[i].EndsWith("\""))
 					{
 						StringBuilder newArg = new StringBuilder();
-						newArg.Append(Arguments[i]);
+						newArg.Append(BaseArguments[i]);
 						for (int j = i + 1; j < argCount; j++)
 						{
 							newArg.Append(' ');
-							newArg.Append(Arguments[j]);
+							newArg.Append(BaseArguments[j]);
 							removeIndices.Add(j);
-							if (!Arguments[j].StartsWith("\"") && Arguments[j].EndsWith("\""))
+							if (!BaseArguments[j].StartsWith("\"") && BaseArguments[j].EndsWith("\""))
 							{
-								Arguments[i] = newArg.ToString();
+								BaseArguments[i] = newArg.ToString();
 								i = j;
 								break;
 							}
@@ -59,7 +59,7 @@ namespace Greathorn.Core.Modules
 				// Post remove
 				foreach (int i in removeIndices)
 				{
-					Arguments.RemoveAt(i);
+					BaseArguments.RemoveAt(i);
 				}
 			}
 		}
@@ -67,18 +67,18 @@ namespace Greathorn.Core.Modules
 		public void Init(AssemblyModule assemblyModule)
 		{
 			// Check if first argument is actually passing in a DLL
-			string fakePath = Path.GetFullPath(Arguments[0]);
+			string fakePath = Path.GetFullPath(BaseArguments[0]);
 			
 			if (File.Exists(fakePath) && fakePath.EndsWith(".dll") && assemblyModule.AssemblyPath == fakePath)
 			{
-				Arguments.RemoveAt(0);
+				BaseArguments.RemoveAt(0);
 			}
 
 			// Handle some possible trickery with our command lines
 			OverrideArguments.Clear();
-			for (int i = Arguments.Count - 1; i >= 0; i--)
+			for (int i = BaseArguments.Count - 1; i >= 0; i--)
 			{
-				string arg = Arguments[i];
+				string arg = BaseArguments[i];
 
 				// Our parser will only work with arguments that comply with the ---ARG=VALUE format
 				if (arg.StartsWith("---"))
@@ -94,14 +94,14 @@ namespace Greathorn.Core.Modules
 					}
 
 					// Take it out of the normal argument list
-					Arguments.RemoveAt(i);
+					BaseArguments.RemoveAt(i);
 				}
 			}
 
-			if (Arguments.Count > 0)
+			if (BaseArguments.Count > 0)
 			{
-				Core.Log.WriteLine("Arguments:", k_LogCategory, ILogOutput.LogType.Info);
-				foreach (string s in Arguments)
+				Core.Log.WriteLine("BaseArguments:", k_LogCategory, ILogOutput.LogType.Info);
+				foreach (string s in BaseArguments)
 				{
 					Core.Log.WriteLine($"\t{s}", k_LogCategory, ILogOutput.LogType.Info);
 				}
@@ -109,7 +109,7 @@ namespace Greathorn.Core.Modules
 
 			if (OverrideArguments.Count > 0)
 			{
-				Core.Log.WriteLine("Override Arguments:", k_LogCategory, ILogOutput.LogType.Info);
+				Core.Log.WriteLine("Override BaseArguments:", k_LogCategory, ILogOutput.LogType.Info);
 				foreach (KeyValuePair<string, string> pair in OverrideArguments)
 				{
 					Core.Log.WriteLine($"\t{pair.Key}={pair.Value}", k_LogCategory, ILogOutput.LogType.Info);
@@ -121,10 +121,10 @@ namespace Greathorn.Core.Modules
         {
             StringBuilder builder = new StringBuilder();
 
-            int arguementCount = Arguments.Count;
+            int arguementCount = BaseArguments.Count;
             for(int i = 0; i < arguementCount; i++)
             {
-                builder.Append($"{Arguments[i]} ");
+                builder.Append($"{BaseArguments[i]} ");
             }
 
             foreach(KeyValuePair<string,string> pair in OverrideArguments)

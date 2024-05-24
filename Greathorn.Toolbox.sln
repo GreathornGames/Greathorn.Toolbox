@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{10E21594-D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeepAlive", "ConsoleApplications\KeepAlive\KeepAlive.csproj", "{8BE7026A-5BDB-4E99-A21B-808FABB7BDDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CleanSlate", "ConsoleApplications\CleanSlate\CleanSlate.csproj", "{13787904-BC4A-41D4-A3DA-5A3320BE35C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,12 @@ Global
 		{8BE7026A-5BDB-4E99-A21B-808FABB7BDDB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{8BE7026A-5BDB-4E99-A21B-808FABB7BDDB}.Workspace|Any CPU.ActiveCfg = Workspace|Any CPU
 		{8BE7026A-5BDB-4E99-A21B-808FABB7BDDB}.Workspace|Any CPU.Build.0 = Workspace|Any CPU
+		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Workspace|Any CPU.ActiveCfg = Debug|Any CPU
+		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Workspace|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,6 +96,7 @@ Global
 		{FDBCFC04-F965-4C88-AF64-F078788DF4EB} = {20B9897A-8522-4606-8A3D-D7EF3C3521B2}
 		{E6472C97-8C06-41D5-8C9B-3C14EA57DB3B} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
 		{8BE7026A-5BDB-4E99-A21B-808FABB7BDDB} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
+		{13787904-BC4A-41D4-A3DA-5A3320BE35C4} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F2E7BB1-7BB3-49FB-A9AC-1A9A8DA9B43B}
