@@ -37,6 +37,19 @@ The application operates normally without any provided arguments, however you ca
 | `no-pause` | Do not pause and wait for any key on exit. |
 | `quiet` | Run in quiet mode, not asking for user input, etc. |
 
+### CleanSlate
+
+A tool for resetting the state of specific areas of the project.
+
+#### Arguments
+
+Any number of arguments can be added as part of the instructions of what to clean.
+
+| Argument | Description |
+| :-- | :-- |
+| `project` | Delete project `Intermediate` and `Binaries` folders. |
+| `project-plugins` | Delete the `Intermediate` and `Binaries` folders of all plugins. |
+
 ### GG
 
 A command synthesizer application which searches for `*.gg.json` files in `\Greathorn\Programs\GG` and recursively under `\Projects\` to build an action list.
