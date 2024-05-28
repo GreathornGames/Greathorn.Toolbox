@@ -325,9 +325,9 @@ namespace Greathorn
             {
                 Console.ReadKey();
             }
-            catch
+            catch (Exception)
             {
-
+                Console.WriteLine("Unable to capture keystroke. Skipping.");
             }
         }
         static int ProcessExecute(string executablePath, string? workingDirectory, string? arguments, string? input, Action<int, string> outputLine)

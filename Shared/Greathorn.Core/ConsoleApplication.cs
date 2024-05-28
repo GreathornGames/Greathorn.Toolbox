@@ -72,7 +72,14 @@ namespace Greathorn.Core
             if(m_ShouldPause && !forced)
             {
                 Console.WriteLine("Press Any Key To Continue ...");
-                Console.ReadKey();
+                try
+                {
+                    Console.ReadKey();
+                }
+                catch(Exception)
+                {
+                    Console.WriteLine("Unable to capture keystroke. Skipping.");
+                }
             }
             System.Environment.Exit(Environment.ExitCode);
 		}
