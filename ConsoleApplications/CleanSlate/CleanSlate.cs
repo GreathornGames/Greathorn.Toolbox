@@ -1,5 +1,6 @@
 using Greathorn.Core;
 using Greathorn.Core.Loggers;
+using Greathorn.Core.Utils;
 using Greathorn.Services.Perforce;
 
 namespace Greathorn
@@ -34,13 +35,14 @@ namespace Greathorn
                 Log.AddLogOutput(new FileLogOutput(settings.LogsFolder, "CleanSlate"));
                 settings.Output();
 
+                ClearEngine(framework, settings);
                 ClearProjectPlugins(framework, settings);
                 ClearProject(framework, settings);
 
                 if (s_ProcessCount == 0)
                 {
                     Log.WriteLine("No valid commands found in arguments", ILogOutput.LogType.Warning);
-                    Log.WriteLine("Valid arguments include 'project' and 'project-plugins'", ILogOutput.LogType.Info);                    
+                    Log.WriteLine("Valid arguments include 'engine', 'project' and 'project-plugins'", ILogOutput.LogType.Info);                    
                 }
             }
             catch (Exception ex)
@@ -116,6 +118,21 @@ namespace Greathorn
                         }
                     }
                 }
+            }
+        }
+
+
+        static void ClearEngine(ConsoleApplication framework, SettingsProvider provider)
+        {
+            if (!framework.Arguments.BaseArguments.Contains("engine"))
+            {
+                return;
+            }
+
+            // Is UE5.sln present? build clean
+            if(File.Exists(provider.SolutionFile))
+            {
+                //ProcessUtil.Execute
             }
         }
     }

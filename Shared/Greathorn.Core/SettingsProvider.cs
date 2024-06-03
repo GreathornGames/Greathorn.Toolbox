@@ -1,6 +1,7 @@
 // Copyright Greathorn Games Inc. All Rights Reserved.
 
 
+using System;
 using System.IO;
 
 namespace Greathorn.Core
@@ -24,6 +25,7 @@ namespace Greathorn.Core
         public readonly string BuildBatchFilesFolder;
         public readonly string TempFile;
         public readonly string P4ConfigFile;
+        public readonly string SolutionFile;
 
         public readonly string ProjectsFolder;
         public readonly string GreathornFolder;
@@ -36,6 +38,7 @@ namespace Greathorn.Core
         {
             RootFolder = root;
 
+            SolutionFile = Path.Combine(RootFolder, "UE5.sln");
             GreathornFolder = Path.Combine(RootFolder, "Greathorn");
             BoostrapLibrary = Path.Combine(GreathornFolder, "Binaries", "Bootstrap", "Bootstrap.dll");
 
