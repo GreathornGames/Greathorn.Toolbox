@@ -35,14 +35,13 @@ namespace Greathorn
                 Log.AddLogOutput(new FileLogOutput(settings.LogsFolder, "CleanSlate"));
                 settings.Output();
 
-                ClearEngine(framework, settings);
                 ClearProjectPlugins(framework, settings);
                 ClearProject(framework, settings);
 
                 if (s_ProcessCount == 0)
                 {
                     Log.WriteLine("No valid commands found in arguments", ILogOutput.LogType.Warning);
-                    Log.WriteLine("Valid arguments include 'engine', 'project' and 'project-plugins'", ILogOutput.LogType.Info);                    
+                    Log.WriteLine("Valid arguments include 'project' and 'project-plugins'", ILogOutput.LogType.Info);                    
                 }
             }
             catch (Exception ex)
@@ -76,12 +75,10 @@ namespace Greathorn
                     Directory.Delete(binariesFolder, true);
                 }
             }
-
-            ClearProjectPlugins(framework, settingsProvider, true);
         }
-        static void ClearProjectPlugins(ConsoleApplication framework, SettingsProvider settingsProvider, bool skipCheck = false)
+        static void ClearProjectPlugins(ConsoleApplication framework, SettingsProvider settingsProvider)
         {
-            if (!framework.Arguments.BaseArguments.Contains("project-plugins") && !skipCheck)
+            if (!framework.Arguments.BaseArguments.Contains("project-plugins"))
             {
                 return;
             }
@@ -119,29 +116,6 @@ namespace Greathorn
                             }
                         }
                     }
-                }
-            }
-        }
-
-        static void ClearEngine(ConsoleApplication framework, SettingsProvider provider)
-        {
-            if (!framework.Arguments.BaseArguments.Contains("engine"))
-            {
-                return;
-            }
-
-            if (File.Exists(provider.SolutionFile))
-            {
-                // Use Visual Studio to do a clean of the engine solution
-                if (framework.Platform.OperatingSystem == Core.Modules.PlatformModule.PlatformType.Windows)
-                {
-                    Microsoft.Build.Locator.VisualStudioInstance visualStudioInstance =
-                        Microsoft.Build.Locator.MSBuildLocator.QueryVisualStudioInstances().OrderByDescending(instance => instance.Version).First();
-
-                    ProcessUtil.Execute(Path.Combine(visualStudioInstance.MSBuildPath, "MSBuild.exe"), provider.RootFolder, $"{provider.SolutionFile} /t:Clean", null, (processIdentifier, line) =>
-                    {
-                        Console.WriteLine($"[{processIdentifier}]\t{line}");
-                    });
                 }
             }
         }

@@ -175,6 +175,11 @@ namespace Greathorn
             {
                 Log.WriteLine("Restarting of terminals required to pickup new environment variables.", ILogOutput.LogType.Info);
             }
+
+            ProcessUtil.Execute("dotnet", settings.RootFolder, "dev-certs https --trust", null, (processIdentifier, line) =>
+            {
+                Log.WriteLine(line, ILogOutput.LogType.Default);
+            });
         }
         static void SetupVSCode(SettingsProvider settings)
         {
