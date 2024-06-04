@@ -1,7 +1,5 @@
 // Copyright Greathorn Games Inc. All Rights Reserved.
 
-
-using System;
 using System.IO;
 
 namespace Greathorn.Core
@@ -34,6 +32,12 @@ namespace Greathorn.Core
         public readonly string GreathornDotNETFolder;
         public readonly string GreathornProgramsFolder;
 
+
+        public readonly string GreathornWorkspaceSettingsFile;
+        public readonly string GreathornWorkspaceVersionFile;
+
+        public readonly string EngineBuildVersionFile;
+
         public SettingsProvider(string root)
         {
             RootFolder = root;
@@ -52,8 +56,12 @@ namespace Greathorn.Core
             GreathornToolboxFolder = Path.Combine(GreathornFolder, "Source", "Programs", "Greathorn.Toolbox");
             GreathornDotNETFolder = Path.Combine(GreathornFolder, "Binaries", "DotNET");
             GreathornProgramsFolder = Path.Combine(GreathornFolder, "Programs");
-        }
 
+            GreathornWorkspaceSettingsFile = Path.Combine(GreathornFolder, "GG_SETTINGS");
+            GreathornWorkspaceVersionFile = Path.Combine(GreathornFolder, "GG_WORKSPACE");
+
+            EngineBuildVersionFile = Path.Combine(RootFolder, "Engine", "Build", "Build.version");
+        }
 
         public void Output()
         {

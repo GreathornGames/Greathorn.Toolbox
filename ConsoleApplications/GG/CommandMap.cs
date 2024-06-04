@@ -155,14 +155,15 @@ namespace GG
                 {
                     currentActionMap = found;
                     depth++;
-                }
 
-                if(depth == partCount)
-                {
-                    return currentActionMap;
+                    if (depth == partCount)
+                    {
+                        return currentActionMap;
+                    }
+                    continue;
                 }
+                return null;
             }
-
             return null;
         }
 

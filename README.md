@@ -47,8 +47,9 @@ Any number of arguments can be added as part of the instructions of what to clea
 
 | Argument | Description |
 | :-- | :-- |
-| `project` | Delete project `Intermediate` and `Binaries` folders. |
-| `project-plugins` | Delete the `Intermediate` and `Binaries` folders of all plugins. |
+| `project` | Delete project `Intermediate` and `Binaries` folders as well as all plugins. |
+| `project-plugins` | Delete the `Intermediate` and `Binaries` folders of all plugins in projects. |
+| `engine` | Cleans all built engine artifacts. |
 
 ### GG
 

@@ -31,9 +31,5 @@ namespace Greathorn.Core.Files
             }
             return returnValue;
         }
-        public static BuildVersion? Get(SettingsProvider settings)
-        {
-            return Get(Path.Combine(settings.RootFolder, "Engine", "Build", "Build.version"));            
-        }
     }
 }

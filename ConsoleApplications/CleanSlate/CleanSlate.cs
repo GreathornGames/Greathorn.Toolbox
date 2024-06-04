@@ -76,10 +76,12 @@ namespace Greathorn
                     Directory.Delete(binariesFolder, true);
                 }
             }
+
+            ClearProjectPlugins(framework, settingsProvider, true);
         }
-        static void ClearProjectPlugins(ConsoleApplication framework, SettingsProvider settingsProvider)
+        static void ClearProjectPlugins(ConsoleApplication framework, SettingsProvider settingsProvider, bool skipCheck = false)
         {
-            if (!framework.Arguments.BaseArguments.Contains("project-plugins"))
+            if (!framework.Arguments.BaseArguments.Contains("project-plugins") && !skipCheck)
             {
                 return;
             }
@@ -121,7 +123,6 @@ namespace Greathorn
             }
         }
 
-
         static void ClearEngine(ConsoleApplication framework, SettingsProvider provider)
         {
             if (!framework.Arguments.BaseArguments.Contains("engine"))
@@ -129,10 +130,19 @@ namespace Greathorn
                 return;
             }
 
-            // Is UE5.sln present? build clean
-            if(File.Exists(provider.SolutionFile))
+            if (File.Exists(provider.SolutionFile))
             {
-                //ProcessUtil.Execute
+                // Use Visual Studio to do a clean of the engine solution
+                if (framework.Platform.OperatingSystem == Core.Modules.PlatformModule.PlatformType.Windows)
+                {
+                    Microsoft.Build.Locator.VisualStudioInstance visualStudioInstance =
+                        Microsoft.Build.Locator.MSBuildLocator.QueryVisualStudioInstances().OrderByDescending(instance => instance.Version).First();
+
+                    ProcessUtil.Execute(Path.Combine(visualStudioInstance.MSBuildPath, "MSBuild.exe"), provider.RootFolder, $"{provider.SolutionFile} /t:Clean", null, (processIdentifier, line) =>
+                    {
+                        Console.WriteLine($"[{processIdentifier}]\t{line}");
+                    });
+                }
             }
         }
     }
