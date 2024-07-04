@@ -250,7 +250,14 @@ namespace Greathorn.Core.Utils
                 }
             }
 
-            return childProcess.ExitCode;
+            if (childProcess.HasExited)
+            {
+                return childProcess.ExitCode;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public static bool IsElevated()
