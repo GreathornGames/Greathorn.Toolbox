@@ -1,3 +1,5 @@
+// Copyright Greathorn Games Inc. All Rights Reserved.
+
 using System;
 using System.Diagnostics;
 using Greathorn.Core.Modules;
@@ -49,8 +51,26 @@ namespace Greathorn.Core
 
             if (settings.RequiresElevatedAccess && !ProcessUtil.IsElevated())
             {
-                Log.WriteLine("Elevation REQUIRED", k_LogCategory, ILogOutput.LogType.Error);
-                ProcessUtil.Elevate("dotnet", System.IO.Directory.GetCurrentDirectory(), $"{Assembly.ExecutingAssembly.Location} { Arguments}", false); ;
+                string relaunchTarget;
+
+                if(Assembly.EntryAssembly != null)
+                {
+                    relaunchTarget = Assembly.EntryAssembly.Location;
+                }
+                else
+                {
+                    relaunchTarget = Assembly.ExecutingAssembly.Location;
+                }
+                Log.WriteLine($"Elevation REQUIRED: {relaunchTarget}", k_LogCategory, ILogOutput.LogType.Error);
+                if (Arguments.BaseArguments.Contains("elevation-check"))
+                {
+                    Log.WriteLine($"Elevation FAILED: {relaunchTarget}", k_LogCategory, ILogOutput.LogType.Error);
+                }
+                else
+                {
+                    Log.Shutdown(); // Need to unlock files
+                    ProcessUtil.Elevate("dotnet", System.IO.Directory.GetCurrentDirectory(), $"{relaunchTarget} {Arguments} elevation-check", false);
+                }
                 m_ShouldPause = false;
                 Shutdown();
             }
