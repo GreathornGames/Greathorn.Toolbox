@@ -77,7 +77,7 @@ namespace Greathorn
             PressAnyKeyToContinue();
         }
 
-        #region Process
+#region Process
         static void ParseArguments(string[] arguments)
         {
             int count = arguments.Length;
@@ -212,7 +212,7 @@ namespace Greathorn
         }
 #endregion
 
-        #region Helpers
+#region Helpers
         static string? GetWorkspaceRoot(string? workingDirectory = null)
         {
             // If we don't have anything provided, we need to start somewhere.
@@ -325,9 +325,11 @@ namespace Greathorn
             {
                 Console.ReadKey();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Console.WriteLine("Unable to capture keystroke. Skipping.");
+                Console.WriteLine("Unable to read input. This is usually because this is being ran inside of a P4V shell."); ;
+                Console.WriteLine($"The actual exception is {e.Message}.");
+                Console.WriteLine("Feel free to CLOSE this process NOW!");
             }
         }
         static int ProcessExecute(string executablePath, string? workingDirectory, string? arguments, string? input, Action<int, string> outputLine)
@@ -608,7 +610,7 @@ namespace Greathorn
             // Clear our cached output
             output.Clear();
         }
-        #endregion
+#endregion
 
     }
 }
