@@ -104,18 +104,18 @@ namespace Greathorn
                         string? arguments = action.Arguments;
                         if (arguments != null)
                         {
-                            arguments = arguments.Replace("{ROOT}", settings.RootFolder);
+                            arguments = settings.ReplaceKeywords(arguments);
                         }
 
                         string? workingDirectory = action.WorkingDirectory;
                         if(workingDirectory != null)
                         {
-                            workingDirectory = workingDirectory.Replace("{ROOT}", settings.RootFolder);
+                            workingDirectory = settings.ReplaceKeywords(workingDirectory);
                         }
 
 
                         // We cant actually just run batch files they have to be ran from a command prompt
-                        string? command = action.Command.Replace("{ROOT}", settings.RootFolder);
+                        string? command = settings.ReplaceKeywords(action.Command);
                         if(action.Command.EndsWith(".bat"))
                         {
                             arguments = $"/K {command} {arguments}";

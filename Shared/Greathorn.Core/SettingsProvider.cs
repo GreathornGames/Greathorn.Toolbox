@@ -1,6 +1,8 @@
 // Copyright Greathorn Games Inc. All Rights Reserved.
 
+using System;
 using System.IO;
+using System.Runtime;
 
 namespace Greathorn.Core
 {
@@ -38,6 +40,11 @@ namespace Greathorn.Core
 
         public readonly string EngineBuildVersionFile;
 
+        public readonly string AppDataFolder;
+        public readonly string AppDataLocalFolder;
+        public readonly string AppDataLocalLowFolder;
+        public readonly string AppDataRoamingFolder;
+
         public SettingsProvider(string root)
         {
             RootFolder = root;
@@ -61,6 +68,19 @@ namespace Greathorn.Core
             GreathornWorkspaceVersionFile = Path.Combine(GreathornFolder, "GG_WORKSPACE");
 
             EngineBuildVersionFile = Path.Combine(RootFolder, "Engine", "Build", "Build.version");
+
+            AppDataFolder = Path.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "..");
+            AppDataLocalFolder = Path.Combine(AppDataFolder, "Local");
+            AppDataLocalLowFolder = Path.Combine(AppDataFolder, "LocalLow");
+            AppDataRoamingFolder = Path.Combine(AppDataFolder, "Roaming");
+        }
+
+        public string ReplaceKeywords(string sourceString)
+        {
+          return sourceString.Replace("{ROOT}", RootFolder)
+                             .Replace("{LOCALLOW}", AppDataLocalLowFolder)
+                             .Replace("{LOCAL}", AppDataLocalFolder)
+                             .Replace("{ROAMING}", AppDataRoamingFolder);
         }
 
         public void Output()
