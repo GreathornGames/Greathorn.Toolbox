@@ -59,20 +59,20 @@ namespace Greathorn.Services.Perforce
             builder.AppendLine("# P4CONFIG");
             builder.AppendLine("#");
             builder.AppendLine("# This is the username that you use to connect to our Perforce server.");
-            builder.AppendLine($"P4USER = {usernameDefault}");
+            builder.AppendLine($"P4USER={usernameDefault}");
             builder.AppendLine("#");
             builder.AppendLine("# This is the password that you use to connect to our Perforce server.");
-            builder.AppendLine($"P4PASSWD= {passwordDefault}");
+            builder.AppendLine($"P4PASSWD={passwordDefault}");
             builder.AppendLine("#");
             builder.AppendLine("# This is the full workspace name that you created previously for this depot.");           
-            builder.AppendLine($"P4CLIENT= {clientDefault}");
+            builder.AppendLine($"P4CLIENT={clientDefault}");
             builder.AppendLine("#");
             builder.AppendLine("# This is the hostname and port of our Perforce server, it is unlikely that you will need to change this.");
-            builder.AppendLine($"P4PORT= {defaultPort}");
+            builder.AppendLine($"P4PORT={defaultPort}");
             builder.AppendLine("#");
             builder.AppendLine("## DO NOT EDIT BELOW THIS LINE ###");
-            builder.AppendLine($"P4CHARSET = {characterSet}");
-            builder.AppendLine($"P4IGNORE = {p4ignore}");
+            builder.AppendLine($"P4CHARSET={characterSet}");
+            builder.AppendLine($"P4IGNORE={p4ignore}");
 
             File.WriteAllText(path, builder.ToString());
         }
