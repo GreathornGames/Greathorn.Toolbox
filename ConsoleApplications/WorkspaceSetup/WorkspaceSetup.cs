@@ -180,6 +180,12 @@ namespace Greathorn
             {
                 Log.WriteLine(line, ILogOutput.LogType.Default);
             });
+
+            // Update workloads
+            ProcessUtil.Execute("dotnet", settings.RootFolder, "workload update", null, (processIdentifier, line) =>
+            {
+                Log.WriteLine(line, ILogOutput.LogType.Default);
+            });
         }
         static void SetupVSCode(SettingsProvider settings)
         {
