@@ -64,7 +64,7 @@ namespace Greathorn.Services.Perforce
             builder.AppendLine("# This is the password that you use to connect to our Perforce server.");
             builder.AppendLine($"P4PASSWD={passwordDefault}");
             builder.AppendLine("#");
-            builder.AppendLine("# This is the full workspace name that you created previously for this depot.");           
+            builder.AppendLine("# This is the full workspace name that you created previously for this depot (probably not what this defaults as!)");           
             builder.AppendLine($"P4CLIENT={clientDefault}");
             builder.AppendLine("#");
             builder.AppendLine("# This is the hostname and port of our Perforce server, it is unlikely that you will need to change this.");
