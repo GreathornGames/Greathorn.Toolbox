@@ -18,9 +18,9 @@ namespace Greathorn.Services.Perforce
         private readonly string m_Port;
         private readonly string m_Username;
 
-        public static void WriteDefault(string path, string defaultPort,  string characterSet, string p4ignore)
+        public static void WriteDefault(string path, string defaultPort, string characterSet, string p4ignore)
         {
-            
+
             StringBuilder builder = new StringBuilder();
 
             string usernameDefault = "[USERNAME]";
@@ -57,6 +57,7 @@ namespace Greathorn.Services.Perforce
             }
 
             builder.AppendLine("# P4CONFIG");
+            builder.AppendLine("# See https://greathorngames.atlassian.net/wiki/spaces/LIB/pages/15925278/Perforce+Setup#p4config.txt for more information!");
             builder.AppendLine("#");
             builder.AppendLine("# This is the username that you use to connect to our Perforce server.");
             builder.AppendLine($"P4USER={usernameDefault}");
@@ -64,7 +65,7 @@ namespace Greathorn.Services.Perforce
             builder.AppendLine("# This is the password that you use to connect to our Perforce server.");
             builder.AppendLine($"P4PASSWD={passwordDefault}");
             builder.AppendLine("#");
-            builder.AppendLine("# This is the full workspace name that you created previously for this depot (probably not what this defaults as!)");           
+            builder.AppendLine("# This is the full workspace name that you created previously for this depot (probably not what this default says!)");
             builder.AppendLine($"P4CLIENT={clientDefault}");
             builder.AppendLine("#");
             builder.AppendLine("# This is the hostname and port of our Perforce server, it is unlikely that you will need to change this.");

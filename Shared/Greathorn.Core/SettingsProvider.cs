@@ -2,7 +2,6 @@
 
 using System;
 using System.IO;
-using System.Runtime;
 
 namespace Greathorn.Core
 {
@@ -12,7 +11,7 @@ namespace Greathorn.Core
     /// </remarks>
     public class SettingsProvider
     {
-        public const string P4Port = "perforce.greathorn.games:1666";
+        public const string P4Port = "perforce.greathorn.games:6911";
         public const string P4CharacterSet = "auto";
         public const string P4IgnoreFileName = "p4ignore.txt";
         public const string P4ConfigFileName = "p4config.txt";
@@ -77,10 +76,10 @@ namespace Greathorn.Core
 
         public string ReplaceKeywords(string sourceString)
         {
-          return sourceString.Replace("{ROOT}", RootFolder)
-                             .Replace("{LOCALLOW}", AppDataLocalLowFolder)
-                             .Replace("{LOCAL}", AppDataLocalFolder)
-                             .Replace("{ROAMING}", AppDataRoamingFolder);
+            return sourceString.Replace("{ROOT}", RootFolder)
+                               .Replace("{LOCALLOW}", AppDataLocalLowFolder)
+                               .Replace("{LOCAL}", AppDataLocalFolder)
+                               .Replace("{ROAMING}", AppDataRoamingFolder);
         }
 
         public void Output()
