@@ -1,3 +1,5 @@
+// Copyright Greathorn Games Inc. All Rights Reserved.
+
 using Greathorn.Core;
 using Greathorn.Core.Loggers;
 using Greathorn.Core.Services.Git;
@@ -7,7 +9,7 @@ using Greathorn.Services.Perforce;
 namespace Greathorn
 {
     internal class WorkspaceSetup
-	{
+    {
         static void Main()
         {
             using ConsoleApplication framework = new(
@@ -19,8 +21,8 @@ namespace Greathorn
                 RequiresElevatedAccess = true,
             });
 
-			try
-			{
+            try
+            {
                 // Find our root
                 string? workspaceRoot = PerforceUtil.GetWorkspaceRoot();
                 if (workspaceRoot == null)
@@ -47,28 +49,28 @@ namespace Greathorn
                 SetupUnrealEngine(framework, settings);
 
             }
-			catch(Exception ex)
-			{
-				framework.ExceptionHandler(ex);
-			}
+            catch (Exception ex)
+            {
+                framework.ExceptionHandler(ex);
+            }
         }
 
         #region Process
         static void UpdateSourceCode(ConsoleApplication framework, SettingsProvider settings)
         {
-            if(framework.Arguments.BaseArguments.Contains("no-source"))
+            if (framework.Arguments.BaseArguments.Contains("no-source"))
             {
                 Log.WriteLine("Skipping Source Check (Argument) ...", "SOURCE", ILogOutput.LogType.Default);
                 return;
             }
-           
+
             string? branch = GitProvider.GetBranch(settings.GreathornToolboxFolder);
             branch ??= "main";
 
             string localCommitHash = GitProvider.GetLocalCommit(settings.GreathornToolboxFolder);
             string? remoteCommitHash = GitProvider.GetRemoteCommit(settings.GreathornToolboxFolder, branch);
-         
-            if(localCommitHash == remoteCommitHash)
+
+            if (localCommitHash == remoteCommitHash)
             {
                 Log.WriteLine($"Local repository up to date ({localCommitHash}).", "SOURCE", ILogOutput.LogType.Default);
                 return;
@@ -145,14 +147,14 @@ namespace Greathorn
                 .. Directory.GetFiles(settings.ProjectsFolder, SettingsProvider.P4CustomToolsFileName, SearchOption.AllDirectories),
             ];
             int foundTools = p4tools.Count;
-            for(int i = 0; i < foundTools; i++)
+            for (int i = 0; i < foundTools; i++)
             {
                 string toolPath = p4tools[i];
                 Log.WriteLine($"Adding {toolPath} ...");
                 CustomTools.CustomToolDefList customTools = CustomTools.Get(toolPath);
                 baseCustomTools.AddOrReplace(customTools);
             }
-            if(foundTools > 0)
+            if (foundTools > 0)
             {
                 baseCustomTools.Output(CustomTools.ConfigFile);
             }
@@ -164,14 +166,14 @@ namespace Greathorn
             Log.WriteLine("Setup Environment", ILogOutput.LogType.Notice);
 
             string? existingMachinePath = System.Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine);
-            if(existingMachinePath != null && !existingMachinePath.Contains(settings.GreathornDotNETFolder))
+            if (existingMachinePath != null && !existingMachinePath.Contains(settings.GreathornDotNETFolder))
             {
                 Log.WriteLine($"Adding to PATH variable ...", ILogOutput.LogType.Default);
                 System.Environment.SetEnvironmentVariable("PATH", $"{existingMachinePath};{settings.GreathornDotNETFolder};", EnvironmentVariableTarget.Machine);
                 restartShellsRequired = true;
             }
 
-            if(restartShellsRequired)
+            if (restartShellsRequired)
             {
                 Log.WriteLine("Restarting of terminals required to pickup new environment variables.", ILogOutput.LogType.Info);
             }
@@ -241,7 +243,7 @@ namespace Greathorn
                     ProcessUtil.Elevate("powershell", settings.RootFolder,
                         $"-inputformat none -outputformat none -NonInteractive -Command Add-MpPreference -ExclusionPath \"{settings.RootFolder}\"");
                     break;
-            } 
+            }
         }
 
         static void SetupUnrealEngine(ConsoleApplication framework, SettingsProvider settings)
@@ -250,6 +252,13 @@ namespace Greathorn
             switch (framework.Platform.OperatingSystem)
             {
                 case Greathorn.Core.Modules.PlatformModule.PlatformType.Windows:
+
+                    // Handle Git Dependencies
+                    string gitDependencies = Path.Combine(settings.RootFolder, "Engine", "Binaries", "DotNET", "GitDependencies", "win-64", "GitDependencies.exe");
+                    Log.WriteLine($"Running {gitDependencies} ...", ILogOutput.LogType.Default);
+                    ProcessUtil.SpawnHidden(gitDependencies, string.Empty);
+
+
                     string prereqExecutable = Path.Combine(settings.RootFolder, "Engine", "Extras", "Redist", "en-us", "UEPrereqSetup_x64.exe");
                     Log.WriteLine($"Running {prereqExecutable} ...", ILogOutput.LogType.Default);
                     ProcessUtil.SpawnHidden(prereqExecutable, "/quiet /norestart");
@@ -270,7 +279,7 @@ namespace Greathorn
                     break;
             }
         }
-#endregion
+        #endregion
 
         //static bool Symlink(string source, string target, bool deleteInPlace = true)
         //{
