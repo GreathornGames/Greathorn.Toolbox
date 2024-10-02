@@ -256,8 +256,11 @@ namespace Greathorn
                     // Handle Git Dependencies
                     string gitDependencies = Path.Combine(settings.RootFolder, "Engine", "Binaries", "DotNET", "GitDependencies", "win-x64", "GitDependencies.exe");
                     Log.WriteLine($"Running {gitDependencies} ...", ILogOutput.LogType.Default);
-                    ProcessUtil.SpawnHidden(gitDependencies, string.Empty);
+                    ProcessUtil.Execute(gitDependencies, settings.RootFolder, null, null, (processIdentifier, line) =>
+                    {
 
+                        Log.WriteLine(line, ILogOutput.LogType.Default);
+                    });
 
                     string prereqExecutable = Path.Combine(settings.RootFolder, "Engine", "Extras", "Redist", "en-us", "UEPrereqSetup_x64.exe");
                     Log.WriteLine($"Running {prereqExecutable} ...", ILogOutput.LogType.Default);
