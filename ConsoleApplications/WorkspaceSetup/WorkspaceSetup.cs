@@ -256,7 +256,7 @@ namespace Greathorn
                     // Handle Git Dependencies
                     string gitDependencies = Path.Combine(settings.RootFolder, "Engine", "Binaries", "DotNET", "GitDependencies", "win-x64", "GitDependencies.exe");
                     Log.WriteLine($"Running {gitDependencies} ...", ILogOutput.LogType.Default);
-                    ProcessUtil.Execute(gitDependencies, settings.RootFolder, null, null, (processIdentifier, line) =>
+                    ProcessUtil.Execute(gitDependencies, settings.RootFolder, "--force", null, (processIdentifier, line) =>
                     {
 
                         Log.WriteLine(line, ILogOutput.LogType.Default);
