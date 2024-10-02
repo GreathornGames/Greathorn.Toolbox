@@ -254,7 +254,7 @@ namespace Greathorn
                 case Greathorn.Core.Modules.PlatformModule.PlatformType.Windows:
 
                     // Handle Git Dependencies
-                    string gitDependencies = Path.Combine(settings.RootFolder, "Engine", "Binaries", "DotNET", "GitDependencies", "win-64", "GitDependencies.exe");
+                    string gitDependencies = Path.Combine(settings.RootFolder, "Engine", "Binaries", "DotNET", "GitDependencies", "win-x64", "GitDependencies.exe");
                     Log.WriteLine($"Running {gitDependencies} ...", ILogOutput.LogType.Default);
                     ProcessUtil.SpawnHidden(gitDependencies, string.Empty);
 
