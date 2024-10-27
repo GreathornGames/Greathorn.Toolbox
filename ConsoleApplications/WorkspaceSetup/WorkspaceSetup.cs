@@ -253,14 +253,18 @@ namespace Greathorn
             {
                 case Greathorn.Core.Modules.PlatformModule.PlatformType.Windows:
 
-                    // Handle Git Dependencies
-                    string gitDependencies = Path.Combine(settings.RootFolder, "Engine", "Binaries", "DotNET", "GitDependencies", "win-x64", "GitDependencies.exe");
-                    Log.WriteLine($"Running {gitDependencies} ...", ILogOutput.LogType.Default);
-                    ProcessUtil.Execute(gitDependencies, settings.RootFolder, "--force", null, (processIdentifier, line) =>
+                    // Handle Git Dependencies (only if explicitly requested)
+                    // In order for Horde to be able to build the actual dependencies need to be commited to your perforce depo
+                    if (framework.Arguments.BaseArguments.Contains("git-dependencies"))
                     {
+                        string gitDependencies = Path.Combine(settings.RootFolder, "Engine", "Binaries", "DotNET", "GitDependencies", "win-x64", "GitDependencies.exe");
+                        Log.WriteLine($"Running {gitDependencies} ...", ILogOutput.LogType.Default);
+                        ProcessUtil.Execute(gitDependencies, settings.RootFolder, "--force", null, (processIdentifier, line) =>
+                        {
 
-                        Log.WriteLine(line, ILogOutput.LogType.Default);
-                    });
+                            Log.WriteLine(line, ILogOutput.LogType.Default);
+                        });
+                    }
 
                     string prereqExecutable = Path.Combine(settings.RootFolder, "Engine", "Extras", "Redist", "en-us", "UEPrereqSetup_x64.exe");
                     Log.WriteLine($"Running {prereqExecutable} ...", ILogOutput.LogType.Default);
