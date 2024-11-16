@@ -57,7 +57,7 @@ namespace Greathorn.Services.Perforce
             }
 
             builder.AppendLine("# P4CONFIG");
-            builder.AppendLine("# See https://greathorngames.atlassian.net/wiki/spaces/LIB/pages/15925278/Perforce+Setup#p4config.txt for more information!");
+            builder.AppendLine("# See https://greathorn.youtrack.cloud/articles/OPS-A-22/p4config.txt for more information!");
             builder.AppendLine("#");
             builder.AppendLine("# This is the username that you use to connect to our Perforce server.");
             builder.AppendLine($"P4USER={usernameDefault}");
