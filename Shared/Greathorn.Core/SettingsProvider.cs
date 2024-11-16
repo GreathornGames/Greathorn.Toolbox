@@ -11,8 +11,8 @@ namespace Greathorn.Core
     /// </remarks>
     public class SettingsProvider
     {
-        public const string P4Port = "perforce.greathorn.games:6911";
-        public const string P4CharacterSet = "auto";
+        public const string P4Port = "ssl:perforce.greathorn.games:1666";
+        public const string P4CharacterSet = "none";
         public const string P4IgnoreFileName = "p4ignore.txt";
         public const string P4ConfigFileName = "p4config.txt";
         public const string P4CustomToolsFileName = "p4v-custom-tools.xml";
