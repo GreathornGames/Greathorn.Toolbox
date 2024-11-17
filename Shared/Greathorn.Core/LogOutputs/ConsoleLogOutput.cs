@@ -23,18 +23,23 @@ namespace Greathorn.Core.Loggers
 
         public void WriteLine(LogType logType, string message)
         {
-			Console.ForegroundColor = logType switch
-			{
-				LogType.Notice => ConsoleColor.DarkGreen,
-				LogType.Error => ConsoleColor.DarkRed,
-				LogType.Info => ConsoleColor.DarkCyan,
+            Console.ForegroundColor = logType switch
+            {
+                LogType.Notice => ConsoleColor.DarkGreen,
+                LogType.Error => ConsoleColor.DarkRed,
+                LogType.Info => ConsoleColor.DarkCyan,
                 LogType.Warning => ConsoleColor.DarkYellow,
-				LogType.ExternalProcess => ConsoleColor.DarkGray,
-				_ => DefaultForegroundColor,
-			};
-			Console.WriteLine(message);
+                LogType.ExternalProcess => ConsoleColor.DarkGray,
+                _ => DefaultForegroundColor,
+            };
+            Console.WriteLine(message);
 
             Console.ForegroundColor = DefaultForegroundColor;
+        }
+
+        public bool IsThreadSafe()
+        {
+            return true;
         }
     }
 }

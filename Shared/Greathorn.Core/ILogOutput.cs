@@ -1,10 +1,5 @@
 // Copyright Greathorn Games Inc. All Rights Reserved.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
-using static Greathorn.Core.Log;
-
 namespace Greathorn.Core
 {
     public interface ILogOutput
@@ -21,7 +16,7 @@ namespace Greathorn.Core
 
         public static string GetName(LogType type)
         {
-            switch(type)
+            switch (type)
             {
                 case LogType.Notice:
                     return "NOTICE";
@@ -43,5 +38,6 @@ namespace Greathorn.Core
 
         public void Shutdown();
 
+        public bool IsThreadSafe();
     }
 }

@@ -34,5 +34,10 @@ namespace Greathorn.Core.Loggers
         {
             m_Writer.WriteLineAsync($"<{ILogOutput.GetName(logType).PadRight(8, ' ')}> {message}");
         }
+
+        public bool IsThreadSafe()
+        {
+            return false;
+        }
     }
 }

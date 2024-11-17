@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KeepAlive", "ConsoleApplica
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanSlate", "ConsoleApplications\CleanSlate\CleanSlate.csproj", "{13787904-BC4A-41D4-A3DA-5A3320BE35C4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnrealTypes", "ConsoleApplications\UnrealTypes\UnrealTypes.csproj", "{254F8EE5-1B23-4735-AB5C-E242497430F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,12 @@ Global
 		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Release|Any CPU.Build.0 = Release|Any CPU
 		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Workspace|Any CPU.ActiveCfg = Workspace|Any CPU
 		{13787904-BC4A-41D4-A3DA-5A3320BE35C4}.Workspace|Any CPU.Build.0 = Workspace|Any CPU
+		{254F8EE5-1B23-4735-AB5C-E242497430F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{254F8EE5-1B23-4735-AB5C-E242497430F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{254F8EE5-1B23-4735-AB5C-E242497430F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{254F8EE5-1B23-4735-AB5C-E242497430F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{254F8EE5-1B23-4735-AB5C-E242497430F0}.Workspace|Any CPU.ActiveCfg = Workspace|Any CPU
+		{254F8EE5-1B23-4735-AB5C-E242497430F0}.Workspace|Any CPU.Build.0 = Workspace|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -97,6 +105,7 @@ Global
 		{E6472C97-8C06-41D5-8C9B-3C14EA57DB3B} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
 		{8BE7026A-5BDB-4E99-A21B-808FABB7BDDB} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
 		{13787904-BC4A-41D4-A3DA-5A3320BE35C4} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
+		{254F8EE5-1B23-4735-AB5C-E242497430F0} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F2E7BB1-7BB3-49FB-A9AC-1A9A8DA9B43B}

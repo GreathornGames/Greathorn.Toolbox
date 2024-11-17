@@ -13,8 +13,21 @@ namespace Greathorn.Core
 
         public static string DefaultCategory = "DEFAULT";
 
+        static bool s_UseThreadSafeCache = false;
         static int s_LogOutputCount = 0;
         static ILogOutput[] s_LogOutputs = new ILogOutput[0];
+        static System.Collections.Concurrent.ConcurrentBag<CachedLogOuput> s_ThreadSafeCache = new System.Collections.Concurrent.ConcurrentBag<CachedLogOuput>();
+
+        struct CachedLogOuput
+        {
+            public string Output;
+            public LogType Type;
+            public CachedLogOuput(string output, LogType type)
+            {
+                Output = output;
+                Type = type;
+            }
+        }
 
         public static void AddLogOutput(ILogOutput output)
         {
@@ -42,36 +55,67 @@ namespace Greathorn.Core
             }
         }
 
-		public static void WriteLine(object output, string? category = null, LogType logType = LogType.Default)
-		{
-			WriteLine(output.ToString(), logType, category);
-		}
-
-		public static void WriteLine(string output, string category, LogType logType = LogType.Default)
-		{
-			WriteLine(output, logType, category);
-		}
-
-		public static void WriteLine(string output, LogType logType = LogType.Default, string? category = null)
+        public static void WriteLine(object output, string? category = null, LogType logType = LogType.Default)
         {
-			if (!HasOutputs() || string.IsNullOrEmpty(output))
-			{
-				return;
-			}
+            WriteLine(output.ToString(), logType, category);
+        }
+
+        public static void WriteLine(string output, string category, LogType logType = LogType.Default)
+        {
+            WriteLine(output, logType, category);
+        }
+
+        public static void WriteLine(string output, LogType logType = LogType.Default, string? category = null)
+        {
+            if (!HasOutputs() || string.IsNullOrEmpty(output))
+            {
+                return;
+            }
 
             category ??= DefaultCategory;
 
-			if (category.Length > k_FixedCategoryLength)
-			{
-				category = category[..k_FixedCategoryLength];
-			}
+            if (category.Length > k_FixedCategoryLength)
+            {
+                category = category[..k_FixedCategoryLength];
+            }
 
+            if (s_UseThreadSafeCache)
+            {
+                s_ThreadSafeCache.Add(new CachedLogOuput($"[{DateTime.Now.ToString(k_DateStampFormat)}] {category.ToUpper(),k_FixedCategoryLength} > {output}", logType));
+            }
 
-			for (int i = 0; i < s_LogOutputCount; i++)
-			{
-				s_LogOutputs[i].WriteLine(logType, $"[{DateTime.Now.ToString(k_DateStampFormat)}] {category.ToUpper(),k_FixedCategoryLength} > {output}");
-			}
-		}
+            for (int i = 0; i < s_LogOutputCount; i++)
+            {
+                if (s_UseThreadSafeCache && !s_LogOutputs[i].IsThreadSafe())
+                {
+                    continue;
+                }
+                s_LogOutputs[i].WriteLine(logType, $"[{DateTime.Now.ToString(k_DateStampFormat)}] {category.ToUpper(),k_FixedCategoryLength} > {output}");
+            }
+        }
+
+        public static void SetThreadSafeMode()
+        {
+            s_UseThreadSafeCache = true;
+        }
+        public static void ClearThreadSafeMode()
+        {
+            s_UseThreadSafeCache = false;
+            CachedLogOuput[] output = s_ThreadSafeCache.ToArray();
+            s_ThreadSafeCache.Clear();
+            int count = output.Length;
+            for (int i = 0; i < count; i++)
+            {
+                for (int j = 0; j < s_LogOutputCount; j++)
+                {
+                    if (s_LogOutputs[j].IsThreadSafe())
+                    {
+                        continue;
+                    }
+                    s_LogOutputs[j].WriteLine(output[i].Type, output[i].Output);
+                }
+            }
+        }
 
 
         public static void WriteRaw(string output, LogType logType = LogType.Default)
@@ -88,7 +132,7 @@ namespace Greathorn.Core
         {
             if (!HasOutputs()) return;
 
-            for(int i = 0; i < s_LogOutputCount; i++)
+            for (int i = 0; i < s_LogOutputCount; i++)
             {
                 s_LogOutputs[i].LineFeed();
             }
@@ -100,6 +144,6 @@ namespace Greathorn.Core
             return s_LogOutputCount > 0;
         }
 
-       
+
     }
 }
