@@ -12,7 +12,7 @@ namespace Greathorn.Core
     public class SettingsProvider
     {
         public const string P4Port = "ssl:perforce.greathorn.games:1666";
-        public const string P4CharacterSet = "utf16";
+        public const string P4CharacterSet = "none";
         public const string P4IgnoreFileName = "p4ignore.txt";
         public const string P4ConfigFileName = "p4config.txt";
         public const string P4CustomToolsFileName = "p4v-custom-tools.xml";
