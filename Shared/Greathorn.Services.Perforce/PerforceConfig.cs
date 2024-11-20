@@ -14,7 +14,6 @@ namespace Greathorn.Services.Perforce
         public const int MaxParallelConnections = 4;
 
         private readonly string m_Client;
-        private readonly string m_Password;
         private readonly string m_Port;
         private readonly string m_Username;
 
@@ -24,19 +23,18 @@ namespace Greathorn.Services.Perforce
             StringBuilder builder = new StringBuilder();
 
             string usernameDefault = "[USERNAME]";
-            string passwordDefault = "[PASSWORD]";
             string clientDefault = "[CLIENT]";
 
             // Check for environment set things
             string? envP4Client = Environment.GetEnvironmentVariable("P4CLIENT");
             if (!string.IsNullOrEmpty(envP4Client))
             {
-                clientDefault = envP4Client;
+                clientDefault = envP4Client.Trim();
             }
             string? envP4User = Environment.GetEnvironmentVariable("P4USER");
             if (!string.IsNullOrEmpty(envP4User))
             {
-                usernameDefault = envP4User;
+                usernameDefault = envP4User.Trim();
             }
 
             // Check for defaults p4 might already know
@@ -47,12 +45,12 @@ namespace Greathorn.Services.Perforce
                 string line = returnLines[i].Trim();
                 if (line.StartsWith("Client name: "))
                 {
-                    clientDefault = line.Replace("Client name: ", string.Empty);
+                    clientDefault = line.Replace("Client name: ", string.Empty).Trim();
                 }
 
                 if (line.StartsWith("User name: "))
                 {
-                    usernameDefault = line.Replace("User name: ", string.Empty);
+                    usernameDefault = line.Replace("User name: ", string.Empty).Trim();
                 }
             }
 
@@ -61,9 +59,6 @@ namespace Greathorn.Services.Perforce
             builder.AppendLine("#");
             builder.AppendLine("# This is the username that you use to connect to our Perforce server.");
             builder.AppendLine($"P4USER={usernameDefault}");
-            builder.AppendLine("#");
-            builder.AppendLine("# This is the password that you use to connect to our Perforce server.");
-            builder.AppendLine($"P4PASSWD={passwordDefault}");
             builder.AppendLine("#");
             builder.AppendLine("# This is the full workspace name that you created previously for this depot (probably not what this default says!)");
             builder.AppendLine($"P4CLIENT={clientDefault}");
@@ -100,16 +95,6 @@ namespace Greathorn.Services.Perforce
                     m_Username = string.Empty;
                 }
 
-                string? configPassword = config["P4USER"];
-                if (configPassword != null)
-                {
-                    m_Password = configPassword;
-                }
-                else
-                {
-                    m_Password = string.Empty;
-                }
-
                 string? configClient = config["P4CLIENT"];
                 if (configClient != null)
                 {
@@ -125,7 +110,6 @@ namespace Greathorn.Services.Perforce
 
             // Failsafe resets
             m_Username ??= string.Empty;
-            m_Password ??= string.Empty;
             m_Client ??= string.Empty;
             m_Port ??= string.Empty;
 
@@ -133,8 +117,6 @@ namespace Greathorn.Services.Perforce
         }
 
         public string Username => m_Username;
-
-        public string Password => m_Password;
 
         public string Port => m_Port;
 
@@ -145,11 +127,6 @@ namespace Greathorn.Services.Perforce
             if (!string.IsNullOrEmpty(Username))
             {
                 Core.Log.WriteLine("\tP4USER: " + Username, PerforceProvider.LogCategory);
-            }
-
-            if (!string.IsNullOrEmpty(Password))
-            {
-                Core.Log.WriteLine("\tP4PASSWD: <REDACTED>", PerforceProvider.LogCategory);
             }
 
             if (!string.IsNullOrEmpty(Port))
