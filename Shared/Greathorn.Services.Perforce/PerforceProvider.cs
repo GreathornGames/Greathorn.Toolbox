@@ -61,8 +61,6 @@ namespace Greathorn.Services.Perforce
         }
 
         public readonly string ClientName;
-        public readonly string Password;
-
         public readonly string ServerAndPort;
         public readonly string UserName;
 
@@ -75,7 +73,6 @@ namespace Greathorn.Services.Perforce
                 ServerAndPort = string.Empty;
                 UserName = string.Empty;
                 ClientName = string.Empty;
-                Password = string.Empty;
                 return;
             }
             else
@@ -83,7 +80,6 @@ namespace Greathorn.Services.Perforce
                 ServerAndPort = CurrentConfig.Port;
                 UserName = CurrentConfig.Username;
                 ClientName = CurrentConfig.Client;
-                Password = CurrentConfig.Password;
             }
         }
 
@@ -92,20 +88,18 @@ namespace Greathorn.Services.Perforce
             ServerAndPort = config.Port;
             UserName = config.Username;
             ClientName = config.Client;
-            Password = config.Password;
         }
 
-        public PerforceProvider(string username, string clientName, string serverAndPort, string password)
+        public PerforceProvider(string username, string clientName, string serverAndPort)
         {
             ServerAndPort = serverAndPort;
             UserName = username;
             ClientName = clientName;
-            Password = password;
         }
 
         public PerforceProvider OpenClient(string clientName)
         {
-            return new PerforceProvider(UserName, clientName, ServerAndPort, Password);
+            return new PerforceProvider(UserName, clientName, ServerAndPort);
         }
 
         public bool GetLoggedInState(out bool isLoggedIn)
@@ -139,10 +133,10 @@ namespace Greathorn.Services.Perforce
             return false;
         }
 
-        public LoginResult Login(out string? errorMessage)
+        public LoginResult Login(string? password, out string? errorMessage)
         {
             List<OutputLine> lines = new List<OutputLine>();
-            bool result = RunCommand("login", Password, line =>
+            bool result = RunCommand("login", password, line =>
             {
                 lines.Add(line);
                 return true;
@@ -155,7 +149,7 @@ namespace Greathorn.Services.Perforce
 
             errorMessage = string.Join("\n", lines.Where(x => x.Channel != OutputLine.OutputChannel.Unknown).Select(x => x.Text));
 
-            if (string.IsNullOrEmpty(Password))
+            if (string.IsNullOrEmpty(password))
             {
                 if (lines.Any(x => x.Channel == OutputLine.OutputChannel.Error && x.Text.Contains("EOF")))
                 {
