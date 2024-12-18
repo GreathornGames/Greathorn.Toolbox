@@ -1,6 +1,5 @@
 // Copyright Greathorn Games Inc. All Rights Reserved.
 
-using System.Data;
 using System.Diagnostics;
 using System.Reflection;
 using System.Security;
@@ -26,39 +25,37 @@ namespace Greathorn
 
         static void Main(string[] args)
         {
-			try
-			{
-				Assembly? assembly = Assembly.GetAssembly(typeof(Bootstrap));
+            try
+            {
+                Assembly? assembly = Assembly.GetAssembly(typeof(Bootstrap));
 
-				if (assembly != null)
-					Console.WriteLine($"Greathorn Bootstrap {assembly.GetName().Version}");
+                if (assembly != null)
+                    Console.WriteLine($"Greathorn Bootstrap {assembly.GetName().Version}");
 
-				// Ensure we have a builder
-				Microsoft.Build.Locator.VisualStudioInstance visualStudioInstance =
-                    Microsoft.Build.Locator.MSBuildLocator.QueryVisualStudioInstances().OrderByDescending(instance => instance.Version).First();
-				if (visualStudioInstance == null)
-				{
-					Console.WriteLine("Unable to find an installation of MSBuild.\nYou need to install .NET SDK found at https://dotnet.microsoft.com/en-us/download/dotnet/8.0");
-					Environment.ExitCode = 1;
-					PressAnyKeyToContinue();
-					return;
-				}
-				Console.WriteLine($"Using MSBuild @ {visualStudioInstance.MSBuildPath}");
+                string? msBuildPath = GetMSBuild();
+                if (msBuildPath == null)
+                {
+                    Console.WriteLine("Unable to find an installation of MSBuild.\nYou need to install .NET SDK found at https://dotnet.microsoft.com/en-us/download/dotnet/8.0");
+                    Environment.ExitCode = 1;
+                    PressAnyKeyToContinue();
+                    return;
+                }
+                Console.WriteLine($"Using MSBuild @ {msBuildPath}");
 
-				// Find the workspace root
-				string? workspaceRoot = GetWorkspaceRoot();
-				if (workspaceRoot == null)
-				{
-					Console.WriteLine("Unable to find workspace root.");
-					Environment.ExitCode = 2;
-					PressAnyKeyToContinue();
-					return;
-				}
-				Console.WriteLine($"Workspace Root @ {workspaceRoot}");
+                // Find the workspace root
+                string? workspaceRoot = GetWorkspaceRoot();
+                if (workspaceRoot == null)
+                {
+                    Console.WriteLine("Unable to find workspace root.");
+                    Environment.ExitCode = 2;
+                    PressAnyKeyToContinue();
+                    return;
+                }
+                Console.WriteLine($"Workspace Root @ {workspaceRoot}");
 
                 // Build our source folder path
                 string sourceFolder = Path.Combine(workspaceRoot, "Greathorn", "Source", "Programs", "Greathorn.Toolbox");
-                Console.WriteLine($"Source Folder @ {sourceFolder}");              
+                Console.WriteLine($"Source Folder @ {sourceFolder}");
 
                 // Grab anything relevant from the command line args
                 ParseArguments(args);
@@ -66,18 +63,18 @@ namespace Greathorn
                 // Run through steps
                 CloneSource(sourceFolder);
                 BuildSource(sourceFolder);
-                WorkspaceSetup(workspaceRoot);            
-			}
-			catch(Exception ex)
-			{
-				Console.WriteLine("BOOTSTRAP EXCEPTION !!!");
-				Console.WriteLine(ex);
-				Environment.ExitCode = ex.HResult;
-			}
+                WorkspaceSetup(workspaceRoot);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("BOOTSTRAP EXCEPTION !!!");
+                Console.WriteLine(ex);
+                Environment.ExitCode = ex.HResult;
+            }
             PressAnyKeyToContinue();
         }
 
-#region Process
+        #region Process
         static void ParseArguments(string[] arguments)
         {
             int count = arguments.Length;
@@ -99,7 +96,7 @@ namespace Greathorn
                 {
                     s_ShouldSetupWorkspace = false;
                 }
-                
+
                 if (arguments[i] == "quiet")
                 {
                     s_QuietMode = true;
@@ -117,14 +114,14 @@ namespace Greathorn
         }
         static void CloneSource(string sourceFolder)
         {
-            if(!s_ShouldClone)
+            if (!s_ShouldClone)
             {
                 Console.WriteLine("Skipping Cloning (Argument) ...");
                 return;
             }
 
             // Extra safe
-            if(sourceFolder == null)
+            if (sourceFolder == null)
             {
                 Console.WriteLine("Skipping Cloning (Null Source Folder) ...");
                 return;
@@ -189,7 +186,7 @@ namespace Greathorn
             }
 
             // Check that we had a good build
-            if(exitCode == 0)
+            if (exitCode == 0)
             {
                 File.WriteAllText(Path.Combine(sourceFolder, k_BuildInfo), GitGetLocalCommit(sourceFolder));
             }
@@ -210,19 +207,19 @@ namespace Greathorn
             }
             ProcessElevate("dotnet", workspaceRoot, args);
         }
-#endregion
+        #endregion
 
-#region Helpers
+        #region Helpers
         static string? GetWorkspaceRoot(string? workingDirectory = null)
         {
             // If we don't have anything provided, we need to start somewhere.
-            if(workingDirectory == null)
+            if (workingDirectory == null)
             {
                 Assembly? assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
-                if(assembly != null)
+                if (assembly != null)
                 {
-                    DirectoryInfo? parentInfo  = Directory.GetParent(assembly.Location);
-                    if(parentInfo != null)
+                    DirectoryInfo? parentInfo = Directory.GetParent(assembly.Location);
+                    if (parentInfo != null)
                     {
                         workingDirectory = parentInfo.FullName;
                     }
@@ -230,14 +227,14 @@ namespace Greathorn
                     {
                         workingDirectory = assembly.Location;
                     }
-                   
+
                 }
-                if(workingDirectory == null)
+                if (workingDirectory == null)
                 {
-                    throw new Exception("Unable to find assembly to determine running location, this is required to find the workspace root.");                    
+                    throw new Exception("Unable to find assembly to determine running location, this is required to find the workspace root.");
                 }
             }
-            
+
             // Check local files for marker
             string[] localFiles = Directory.GetFiles(workingDirectory);
             int localFileCount = localFiles.Length;
@@ -332,6 +329,39 @@ namespace Greathorn
                 Console.WriteLine("Feel free to CLOSE this process NOW!");
             }
         }
+
+        static string? GetMSBuild()
+        {
+            //Check using the Visual Studio instance finder first
+            IEnumerable<Microsoft.Build.Locator.VisualStudioInstance> quickFind = Microsoft.Build.Locator.MSBuildLocator.QueryVisualStudioInstances();
+            if (quickFind != null && quickFind.Any())
+            {
+                return quickFind.OrderByDescending(instance => instance.Version).First().MSBuildPath;
+            }
+
+            // Lets look for the file quickly
+            if (Directory.Exists("C:\\Program Files\\dotnet\\sdk"))
+            {
+                List<string> foundPaths = new List<string>();
+                IEnumerable<string> folders = Directory.EnumerateDirectories("C:\\Program Files\\dotnet\\sdk", "*", SearchOption.TopDirectoryOnly);
+                foreach (string folder in folders)
+                {
+                    string path = Path.Combine(folder, "MSBuild.dll");
+                    if (File.Exists(path))
+                    {
+                        foundPaths.Add(path);
+                    }
+                }
+                if (foundPaths.Count > 0)
+                {
+                    foundPaths.Sort();
+                    return foundPaths[foundPaths.Count - 1];
+                }
+            }
+
+            return null;
+        }
+
         static int ProcessExecute(string executablePath, string? workingDirectory, string? arguments, string? input, Action<int, string> outputLine)
         {
             using Process childProcess = new();
@@ -610,7 +640,7 @@ namespace Greathorn
             // Clear our cached output
             output.Clear();
         }
-#endregion
+        #endregion
 
     }
 }
