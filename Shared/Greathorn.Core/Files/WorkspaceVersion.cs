@@ -8,10 +8,14 @@ namespace Greathorn.Core.Files
 {
     [Serializable]
     class WorkspaceVersion
-    {        
+    {
+#pragma warning disable 0649
         public string? Engine; // Do we need to force a clean and build of the engine?
+
         public string? Project; // Do we need to force a clean and build of the project?
+
         public string? Toolbox; // Do we need to pull and update the toolbox?
+#pragma warning restore 0649
 
         private string? m_Path;
 
