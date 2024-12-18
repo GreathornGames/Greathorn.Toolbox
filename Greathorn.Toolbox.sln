@@ -33,6 +33,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CleanSlate", "ConsoleApplic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnrealTypes", "ConsoleApplications\UnrealTypes\UnrealTypes.csproj", "{254F8EE5-1B23-4735-AB5C-E242497430F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileReplacer", "ConsoleApplications\FileReplacer\FileReplacer.csproj", "{AE0A613D-F669-4962-9B32-ED94F94DA2A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SteamToken", "ConsoleApplications\SteamToken\SteamToken.csproj", "{8509E9D9-A5CA-4A55-B1E5-64E602DEC8F4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +97,18 @@ Global
 		{254F8EE5-1B23-4735-AB5C-E242497430F0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{254F8EE5-1B23-4735-AB5C-E242497430F0}.Workspace|Any CPU.ActiveCfg = Workspace|Any CPU
 		{254F8EE5-1B23-4735-AB5C-E242497430F0}.Workspace|Any CPU.Build.0 = Workspace|Any CPU
+		{AE0A613D-F669-4962-9B32-ED94F94DA2A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE0A613D-F669-4962-9B32-ED94F94DA2A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE0A613D-F669-4962-9B32-ED94F94DA2A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE0A613D-F669-4962-9B32-ED94F94DA2A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE0A613D-F669-4962-9B32-ED94F94DA2A7}.Workspace|Any CPU.ActiveCfg = Workspace|Any CPU
+		{AE0A613D-F669-4962-9B32-ED94F94DA2A7}.Workspace|Any CPU.Build.0 = Workspace|Any CPU
+		{8509E9D9-A5CA-4A55-B1E5-64E602DEC8F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8509E9D9-A5CA-4A55-B1E5-64E602DEC8F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8509E9D9-A5CA-4A55-B1E5-64E602DEC8F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8509E9D9-A5CA-4A55-B1E5-64E602DEC8F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8509E9D9-A5CA-4A55-B1E5-64E602DEC8F4}.Workspace|Any CPU.ActiveCfg = Workspace|Any CPU
+		{8509E9D9-A5CA-4A55-B1E5-64E602DEC8F4}.Workspace|Any CPU.Build.0 = Workspace|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +122,8 @@ Global
 		{8BE7026A-5BDB-4E99-A21B-808FABB7BDDB} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
 		{13787904-BC4A-41D4-A3DA-5A3320BE35C4} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
 		{254F8EE5-1B23-4735-AB5C-E242497430F0} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
+		{AE0A613D-F669-4962-9B32-ED94F94DA2A7} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
+		{8509E9D9-A5CA-4A55-B1E5-64E602DEC8F4} = {E4CCF069-9072-4D74-B000-2D2ABB660090}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8F2E7BB1-7BB3-49FB-A9AC-1A9A8DA9B43B}
