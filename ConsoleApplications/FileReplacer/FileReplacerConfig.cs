@@ -33,10 +33,6 @@ namespace FileReplacer
             if (framework.Arguments.OverrideArguments.ContainsKey("TARGET"))
             {
                 config.TargetFile = framework.Arguments.OverrideArguments["TARGET"];
-                if (!File.Exists(config.TargetFile))
-                {
-                    throw (new FileNotFoundException($"Unable to find target {config.TargetFile}"));
-                }
             }
             else
             {
