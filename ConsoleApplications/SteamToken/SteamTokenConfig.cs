@@ -6,36 +6,31 @@ namespace SteamToken
 {
     public class SteamTokenConfig()
     {
-        public string DatabaseFolder = "H:\\SteamUploader";
-        public string JournalFileName = "journal.json";
-
-        public string? JournalPath;
+        public string JournalPath = "H:\\SteamUploader\\journal.db";
+        public int RetryCount = 5;
 
         public static SteamTokenConfig Get(ConsoleApplication framework)
         {
             SteamTokenConfig config = new SteamTokenConfig();
 
-            if (framework.Arguments.OverrideArguments.ContainsKey("DATABASE"))
-            {
-                config.DatabaseFolder = framework.Arguments.OverrideArguments["DATABASE"];
-            }
-
-            if (!Directory.Exists(config.DatabaseFolder))
-            {
-                throw (new DirectoryNotFoundException($"Unable to reach / find database directory @ {config.DatabaseFolder}"));
-            }
-
             if (framework.Arguments.OverrideArguments.ContainsKey("JOURNAL"))
             {
-                config.JournalFileName = framework.Arguments.OverrideArguments["JOURNAL"];
+                config.JournalPath = framework.Arguments.OverrideArguments["JOURNAL"];
             }
-
-            config.JournalPath = Path.Combine(config.DatabaseFolder, config.JournalFileName);
-
 
             if (!File.Exists(config.JournalPath))
             {
-                throw (new FileNotFoundException($"Unable to find journal file @ {config.JournalPath }"));
+                throw (new FileNotFoundException($"Unable to reach / find journal @ {config.JournalPath}"));
+            }
+
+            if (framework.Arguments.OverrideArguments.ContainsKey("RETRYCOUNT"))
+            {
+                int.TryParse(framework.Arguments.OverrideArguments["RETRYCOUNT"], out config.RetryCount);
+            }
+
+            if(config.RetryCount < 0)
+            {
+                throw new ArgumentOutOfRangeException("Retry count must not be negative.");
             }
 
             return config;

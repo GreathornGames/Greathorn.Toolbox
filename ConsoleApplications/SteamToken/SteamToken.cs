@@ -1,6 +1,8 @@
 // Copyright Greathorn Games Inc. All Rights Reserved.
 
 using Greathorn.Core;
+using Greathorn.Core.IO;
+using SteamToken;
 
 namespace Greathorn
 {
@@ -17,7 +19,18 @@ namespace Greathorn
 
             try
             {
+                SteamTokenConfig config = SteamTokenConfig.Get(framework);
+                using(FileLock journalLock = new FileLock(config.JournalPath))
+                {
+                    if (!journalLock.SafeLock(config.RetryCount, 5000))
+                    {
+                        throw new Exception("Unable to get lock on journal file in time.");
+                    }
+                    SteamTokenJournal? journal = SteamTokenJournal.Get(journalLock);
 
+                    
+                    
+                }
             }
             catch (Exception ex)
             {
