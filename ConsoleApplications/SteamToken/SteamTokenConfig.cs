@@ -12,7 +12,7 @@ namespace SteamToken
         public bool CopyLibraryFlag;
 
         public string? Token;
-        public string TokenFolder = "H:\\SteamToken";
+        public string TokenFolder = "\\192.168.20.21\\Horde\\SteamToken";
 
 
 
