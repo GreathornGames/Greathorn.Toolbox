@@ -6,15 +6,16 @@ namespace SteamToken
 {
     public class SteamTokenConfig()
     {
+        public bool InstallFlag;
         public bool CheckOutFlag;
         public bool CheckInFlag;
         public bool ForceFlag;
         public bool CopyLibraryFlag;
 
         public string? Token;
-        public string TokenFolder = "\\\\192.168.20.21\\Horde\\SteamToken";
-
-
+        public string InstallPackage = "\\\\192.168.20.21\\Horde\\Steamworks\\SDK\\161.zip";
+        public string InstallLocation = "D:\\Steam";
+        public string TokenFolder = "\\\\192.168.20.21\\Horde\\Steamworks\\Tokens";
 
         public int RetryCount = 5;
 
@@ -40,6 +41,20 @@ namespace SteamToken
                 throw (new DirectoryNotFoundException($"Unable to reach the token folder @ {config.TokenFolder}"));
             }
 
+            if (framework.Arguments.OverrideArguments.ContainsKey("INSTALL-PACKAGE"))
+            {
+                config.InstallPackage = framework.Arguments.OverrideArguments["INSTALL-PACKAGE"];
+            }
+
+            if (!File.Exists(config.InstallPackage))
+            {
+                throw (new DirectoryNotFoundException($"Unable to reach the install package @ {config.InstallPackage}"));
+            }
+
+            if (framework.Arguments.OverrideArguments.ContainsKey("INSTALL-LOCATION"))
+            {
+                config.InstallLocation = framework.Arguments.OverrideArguments["INSTALL-LOCATION"];
+            }
 
             if (framework.Arguments.OverrideArguments.ContainsKey("TOKEN"))
             {
@@ -56,6 +71,7 @@ namespace SteamToken
                 throw new ArgumentOutOfRangeException("Retry count must not be negative.");
             }
 
+            config.InstallFlag = framework.Arguments.BaseArguments.Contains("INSTALL");
             config.CheckOutFlag = framework.Arguments.BaseArguments.Contains("OUT");
             config.CheckInFlag = framework.Arguments.BaseArguments.Contains("IN");
             config.ForceFlag = framework.Arguments.BaseArguments.Contains("FORCE");
@@ -71,9 +87,9 @@ namespace SteamToken
                 throw new Exception("You need to provide a TOKEN-TARGET when checking in a token.");
             }
 
-            if (!config.CheckInFlag && !config.CheckOutFlag)
+            if (!config.InstallFlag && !config.CheckInFlag && !config.CheckOutFlag)
             {
-                throw new Exception("You need to provide an action IN or OUT.");
+                throw new Exception("You need to provide an action IN, OUT, or INSTALL action.");
             }
 
             return config;

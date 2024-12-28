@@ -30,6 +30,17 @@ namespace Greathorn
                 }
                 Log.WriteLine($"Found {foundTokens.Length} Tokens In Pool.");
 
+                // Install/Update Steamworks
+                if(config.InstallFlag)
+                {
+                    // Check for existing install
+                    if(!Directory.Exists(Path.Combine(config.InstallLocation, "sdk")))
+                    {
+                        // We dont have an existing version install we need to grab the package
+                        System.IO.Compression.ZipFile.ExtractToDirectory(config.InstallPackage, config.InstallLocation);
+                    }
+                }
+
                 // --- CHECKOUT ---
                 if (config.CheckOutFlag)
                 {
