@@ -31,10 +31,10 @@ namespace Greathorn
                 Log.WriteLine($"Found {foundTokens.Length} Tokens In Pool.");
 
                 // Install/Update Steamworks
-                if(config.InstallFlag)
+                if (config.InstallFlag)
                 {
                     // Check for existing install
-                    if(!Directory.Exists(Path.Combine(config.InstallLocation, "sdk")))
+                    if (!Directory.Exists(Path.Combine(config.InstallLocation, "sdk")))
                     {
                         // We dont have an existing version install we need to grab the package
                         System.IO.Compression.ZipFile.ExtractToDirectory(config.InstallPackage, config.InstallLocation);
@@ -88,6 +88,14 @@ namespace Greathorn
 
                     // Write a previous file so we know where we got this token from
                     File.WriteAllText(config.TokenTarget + ".checkout", token.FilePath);
+
+                    // Set the environment variable - ? this will make it elevated required
+                    Environment.SetEnvironmentVariable(config.UsernameEnvironmentVariable, Path.GetFileNameWithoutExtension(token.FilePath));
+
+                    Log.WriteLine($"Set user environment variable {config.UsernameEnvironmentVariable} to: {Environment.GetEnvironmentVariable(config.UsernameEnvironmentVariable)}");
+
+                    File.WriteAllText(config.TokenTarget + ".checkout", token.FilePath);
+
 #pragma warning restore CS8604
                 }
 
