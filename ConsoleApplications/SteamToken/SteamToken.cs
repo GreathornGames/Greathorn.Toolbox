@@ -94,11 +94,14 @@ namespace Greathorn
                     // Write a previous file so we know where we got this token from
                     File.WriteAllText(config.TokenTarget + ".checkout", token.FilePath);
 
-                    // Set the environment variable - ? this will make it elevated required
-                    Environment.SetEnvironmentVariable(config.UsernameEnvironmentVariable, Path.GetFileNameWithoutExtension(token.FilePath));
+                    // Get username
+                    string username = Path.GetFileNameWithoutExtension(token.FilePath);
 
+                    // Set the environment variable - ? this will make it elevated required
+                    Environment.SetEnvironmentVariable(config.UsernameEnvironmentVariable, username);
                     Log.WriteLine($"Set user environment variable {config.UsernameEnvironmentVariable} to: {Environment.GetEnvironmentVariable(config.UsernameEnvironmentVariable)}");
 
+                    File.WriteAllText(config.TokenTarget + ".username", username);
                     File.WriteAllText(config.TokenTarget + ".checkout", token.FilePath);
 
 #pragma warning restore CS8604
