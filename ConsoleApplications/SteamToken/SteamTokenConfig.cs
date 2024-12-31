@@ -13,9 +13,9 @@ namespace SteamToken
         public bool CopyLibraryFlag;
 
         public string? Token;
-        public string InstallPackage = "\\\\192.168.20.21\\Horde\\Steamworks\\SDK\\161.zip";
+        public string InstallPackage = "H:\\Steamworks\\SDK\\161.zip";
         public string InstallLocation = "D:\\Steam";
-        public string TokenFolder = "\\\\192.168.20.21\\Horde\\Steamworks\\Tokens";
+        public string TokenFolder = "H:\\Steamworks\\Tokens";
         public string UsernameEnvironmentVariable = "horde.SteamLogin";
 
         public int RetryCount = 5;
