@@ -1,6 +1,7 @@
 // Copyright Greathorn Games Inc. All Rights Reserved.
 
 using Greathorn.Core;
+using Greathorn.Core.Utils;
 
 namespace SteamToken
 {
@@ -18,6 +19,13 @@ namespace SteamToken
         public string TokenFolder = "H:\\Steamworks\\Tokens";
         public string UsernameEnvironmentVariable = "horde.SteamLogin";
 
+
+        public string? NetworkUsername;
+        public string? NetworkPassword;
+        public string NetworkDrive = "H:";
+        public string NetworkShare = "\\\\192.168.20.21\\Horde";
+
+
         public int RetryCount = 5;
 
         public string? TokenTarget;
@@ -25,6 +33,34 @@ namespace SteamToken
         public static SteamTokenConfig Get(ConsoleApplication framework)
         {
             SteamTokenConfig config = new SteamTokenConfig();
+
+
+            if (framework.Arguments.OverrideArguments.ContainsKey("NETWORK-USERNAME"))
+            {
+                config.NetworkUsername = framework.Arguments.OverrideArguments["NETWORK-USERNAME"];
+            }
+            if (framework.Arguments.OverrideArguments.ContainsKey("NETWORK-PASSWORD"))
+            {
+                config.NetworkPassword = framework.Arguments.OverrideArguments["NETWORK-PASSWORD"];
+            }
+            if (framework.Arguments.OverrideArguments.ContainsKey("NETWORK-DRIVE"))
+            {
+                config.NetworkDrive = framework.Arguments.OverrideArguments["NETWORK-DRIVE"];
+            }
+            if (framework.Arguments.OverrideArguments.ContainsKey("NETWORK-SHARE"))
+            {
+                config.NetworkShare = framework.Arguments.OverrideArguments["NETWORK-SHARE"];
+            }
+
+            // We need to early configure the network share if we have a password
+            if (!string.IsNullOrEmpty(config.NetworkPassword) && !string.IsNullOrEmpty(config.NetworkUsername) && !Directory.Exists(config.TokenFolder))
+            {
+                Log.WriteLine($"Establishing network share {config.NetworkDrive} -> {config.NetworkShare}");
+                ProcessUtil.Execute("net", null, $"use {config.NetworkDrive} {config.NetworkShare} /USER:{config.NetworkUsername} {config.NetworkPassword}", null, (processIdentifier, line) =>
+                {
+                    Log.WriteLine($"[{processIdentifier}]\t{line}");
+                });
+            }
 
             if (framework.Arguments.OverrideArguments.ContainsKey("TOKEN-TARGET"))
             {
