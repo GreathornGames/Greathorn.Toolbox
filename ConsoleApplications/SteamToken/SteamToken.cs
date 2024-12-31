@@ -2,6 +2,7 @@
 
 using Greathorn.Core;
 using Greathorn.Core.IO;
+using Greathorn.Core.Utils;
 using SteamToken;
 
 namespace Greathorn
@@ -83,6 +84,10 @@ namespace Greathorn
                     token.IsPersistant = true;
 
                     Log.WriteLine($"Checked out {token.FilePath} to {config.TokenTarget}.");
+
+
+                    // We need to ensure the folder we are writing to exists as it might be a brand new installation
+                    FileUtil.EnsureFileFolderHierarchyExists(config.TokenTarget);
 
                     File.Copy(token.FilePath, config.TokenTarget, true);
 
