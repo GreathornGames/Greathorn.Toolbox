@@ -9,6 +9,91 @@ namespace Greathorn
 {
     internal class SteamToken
     {
+        static FileLock? s_Token = null;
+        static string? s_TokenUsername;
+
+
+        static bool CheckoutToken(SteamTokenConfig config)
+        {
+            // Get token list / lock
+            string[] foundTokens = Directory.GetFiles(config.TokenFolder, "*.vdf");
+            if (foundTokens.Length <= 0)
+            {
+                throw new Exception($"Unable to find tokens (*.vdf) at {config.TokenFolder}.");
+            }
+            Log.WriteLine($"Found {foundTokens.Length} Tokens In Pool.");
+
+            // Handle Specific Target
+            if (config.Token != null)
+            {
+                s_Token = new FileLock(Path.Combine(config.TokenFolder, config.Token + ".vdf"));
+                s_Token.Lock(config.ForceFlag);
+                if (!s_Token.HasLock())
+                {
+
+                    if (!s_Token.SafeLock())
+                    {
+                        throw new Exception($"Was unable to acquire lock to {config.Token}");
+                    }
+                }
+            }
+            if (s_Token == null)
+            {
+                for (int i = 0; i < foundTokens.Length; i++)
+                {
+                    // We don't allow force when we don't have a target
+                    s_Token = new FileLock(foundTokens[i]);
+                    if (s_Token.Lock())
+                    {
+                        break;
+                    }
+                    s_Token = null;
+                }
+            }
+
+
+            if (s_Token == null)
+            {
+                return false;
+            }
+
+
+
+            // We need to ensure the folder we are writing to exists as it might be a brand new installation
+#pragma warning disable CS8604 // Possible null reference argument.
+            FileUtil.EnsureFileFolderHierarchyExists(config.TokenTarget);
+#pragma warning restore CS8604 // Possible null reference argument.
+
+            File.Copy(s_Token.FilePath, config.TokenTarget, true);
+
+            s_TokenUsername = Path.GetFileNameWithoutExtension(s_Token.FilePath);
+
+            Log.WriteLine($"Checked out {s_Token.FilePath} to {config.TokenTarget} for user {s_TokenUsername}.");
+
+            return true;
+        }
+        static bool CheckinToken(SteamTokenConfig config)
+        {
+
+            if (s_Token == null)
+            {
+                throw new Exception("Attempting to check-in a token that is null.");
+            }
+            if (s_Token.HasLock())
+            {
+                if (config.TokenTarget != null)
+                {
+                    Log.WriteLine($"Returned {config.TokenTarget} to {s_Token.FilePath}.");
+
+                    // Copy File
+                    File.Copy(config.TokenTarget, s_Token.FilePath, true);
+                }
+                s_Token.Unlock();
+                return true;
+            }
+            return false;
+        }
+
         static void Main()
         {
             using ConsoleApplication framework = new(
@@ -18,136 +103,59 @@ namespace Greathorn
                 LogOutputs = [new Greathorn.Core.Loggers.ConsoleLogOutput()]
             });
 
+
+
             try
             {
                 SteamTokenConfig config = SteamTokenConfig.Get(framework);
-                FileLock? token = null;
 
-                // Get token list / lock
-                string[] foundTokens = Directory.GetFiles(config.TokenFolder, "*.vdf");
-                if (foundTokens.Length <= 0)
+                // Check for existing install
+                if (!Directory.Exists(Path.Combine(config.InstallLocation, "sdk")))
                 {
-                    throw new Exception($"Unable to find tokens (*.vdf) at {config.TokenFolder}.");
-                }
-                Log.WriteLine($"Found {foundTokens.Length} Tokens In Pool.");
 
-                // Install/Update Steamworks
-                if (config.InstallFlag)
-                {
-                    // Check for existing install
-                    if (!Directory.Exists(Path.Combine(config.InstallLocation, "sdk")))
-                    {
-                        // We dont have an existing version install we need to grab the package
-                        System.IO.Compression.ZipFile.ExtractToDirectory(config.InstallPackage, config.InstallLocation);
-                    }
+                    // We don't have an existing version install we need to grab the package
+                    Log.WriteLine($"Installing Steamworks SDK to {config.InstallLocation}.");
+                    System.IO.Compression.ZipFile.ExtractToDirectory(config.InstallPackage, config.InstallLocation);
                 }
 
-                // --- CHECKOUT ---
-                if (config.CheckOutFlag)
+                string steamCmd = Path.Combine(config.InstallLocation, "sdk", "tools", "ContentBuilder", "builder", "steamcmd.exe");
+                if (!File.Exists(steamCmd))
                 {
-                    // Handle Specific Target
-                    if (config.Token != null)
-                    {
-                        token = new FileLock(Path.Combine(config.TokenFolder, config.Token + ".vdf"));
-                        token.Lock(config.ForceFlag);
-                        if (!token.HasLock())
-                        {
+                    throw new Exception("Unable to find SteamCMD");
+                }
+#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
+                string steamCmdDirectory = Path.GetDirectoryName(steamCmd);
+#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 
-                            if (!token.SafeLock())
-                            {
-                                throw new Exception($"Was unable to acquire lock to {config.Token}");
-                            }
-                        }
-                    }
-                    if (token == null)
-                    {
-                        for (int i = 0; i < foundTokens.Length; i++)
-                        {
-                            // We don't allow force when we don't have a target
-                            token = new FileLock(foundTokens[i]);
-                            if (token.Lock())
-                            {
-                                break;
-                            }
-                            token = null;
-                        }
-                    }
-                    if (token == null)
-                    {
-                        throw new Exception($"Was unable to acquire a token.");
-                    }
-
-#pragma warning disable CS8604
-                    // Because we are checking this out we want the lock to be persistent, this complicates things if
-                    // a process hangs with a lock, but we have to do _something_. The locking mechanism does account
-                    // for this by looking at the timestamps
-                    token.IsPersistant = true;
-
-                    Log.WriteLine($"Checked out {token.FilePath} to {config.TokenTarget}.");
+                // Make sure the install is up to date
+                int updateExitCode = ProcessUtil.Execute(steamCmd, steamCmdDirectory, "+quit", null, (processIdentifier, line) =>
+                {
+                    Log.WriteLine(line, ILogOutput.LogType.ExternalProcess);
+                });
+                framework.Environment.UpdateExitCode(updateExitCode);
 
 
-                    // We need to ensure the folder we are writing to exists as it might be a brand new installation
-                    FileUtil.EnsureFileFolderHierarchyExists(config.TokenTarget);
-
-                    File.Copy(token.FilePath, config.TokenTarget, true);
-
-                    // Write a previous file so we know where we got this token from
-                    File.WriteAllText(config.TokenTarget + ".checkout", token.FilePath);
-
-                    // Get username
-                    string username = Path.GetFileNameWithoutExtension(token.FilePath);
-
-                    // Set the environment variable - ? this will make it elevated required
-                    Environment.SetEnvironmentVariable(config.UsernameEnvironmentVariable, username);
-                    Log.WriteLine($"Set user environment variable {config.UsernameEnvironmentVariable} to: {Environment.GetEnvironmentVariable(config.UsernameEnvironmentVariable)}");
-
-                    File.WriteAllText(config.TokenTarget + ".username", username);
-                    File.WriteAllText(config.TokenTarget + ".checkout", token.FilePath);
-
-#pragma warning restore CS8604
+                if (!CheckoutToken(config))
+                {
+                    throw new Exception("Unable to checkout a token.");
                 }
 
-                // --- CHECKIN ---
-                if (config.CheckInFlag)
+                // Run the upload
+                int uploadExitCode = ProcessUtil.Execute(steamCmd, steamCmdDirectory, $"+login {s_TokenUsername} +run_app_build {config.AppBuild} +quit", null, (processIdentifier, line) =>
                 {
-#pragma warning disable CS8604
-                    string previousCheckout = config.TokenTarget + ".checkout";
-                    // We need to get the checkout data
-                    if (!File.Exists(previousCheckout))
-                    {
-                        throw new Exception("Unable to find previous checkout data.");
-                    }
-                    string previousPath = File.ReadAllText(previousCheckout).Trim();
-                    string tokenFilePath = Path.Combine(config.TokenFolder, Path.GetFileName(previousPath));
+                    Log.WriteLine(line, ILogOutput.LogType.ExternalProcess);
+                });
+                framework.Environment.UpdateExitCode(uploadExitCode);
 
-#pragma warning restore CS8604
-                    token = new FileLock(tokenFilePath);
-
-                    // The idea is that the lock has already been gotten for the file at this point and we are just
-                    // continuing the persistent lock from before.
-                    token.Lock(config.ForceFlag);
-                    if (!token.HasLock())
-                    {
-                        if (!token.SafeLock())
-                        {
-                            throw new Exception($"Was unable to acquire lock to {config.Token}");
-                        }
-                    }
-
-                    Log.WriteLine($"Returned {config.TokenTarget} to {tokenFilePath}.");
-
-                    if (config.TokenTarget != null)
-                    {
-                        // Copy File
-                        File.Copy(config.TokenTarget, tokenFilePath, true);
-                    }
-
-                    token.Unlock();
-                    File.Delete(previousCheckout);
+                if (!CheckinToken(config))
+                {
+                    Log.WriteLine("There was an issue returning the token.", ILogOutput.LogType.Warning);
                 }
+
             }
             catch (Exception ex)
             {
+                s_Token?.Unlock();
                 framework.ExceptionHandler(ex);
             }
         }

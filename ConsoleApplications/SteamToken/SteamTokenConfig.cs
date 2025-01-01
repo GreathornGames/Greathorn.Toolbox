@@ -7,11 +7,7 @@ namespace SteamToken
 {
     public class SteamTokenConfig()
     {
-        public bool InstallFlag;
-        public bool CheckOutFlag;
-        public bool CheckInFlag;
         public bool ForceFlag;
-        public bool CopyLibraryFlag;
 
         public string? Token;
         public string InstallPackage = "H:\\Steamworks\\SDK\\161.zip";
@@ -25,15 +21,20 @@ namespace SteamToken
         public string NetworkDrive = "H:";
         public string NetworkShare = "\\\\192.168.20.21\\Horde";
 
+        public string? AppBuild;
+
 
         public int RetryCount = 5;
 
         public string? TokenTarget;
 
+
+
         public static SteamTokenConfig Get(ConsoleApplication framework)
         {
             SteamTokenConfig config = new SteamTokenConfig();
 
+            config.ForceFlag = framework.Arguments.BaseArguments.Contains("FORCE");
 
             if (framework.Arguments.OverrideArguments.ContainsKey("NETWORK-USERNAME"))
             {
@@ -66,7 +67,6 @@ namespace SteamToken
             {
                 config.TokenTarget = framework.Arguments.OverrideArguments["TOKEN-TARGET"];
             }
-
 
             if (framework.Arguments.OverrideArguments.ContainsKey("TOKEN-FOLDER"))
             {
@@ -108,25 +108,17 @@ namespace SteamToken
                 throw new ArgumentOutOfRangeException("Retry count must not be negative.");
             }
 
-            config.InstallFlag = framework.Arguments.BaseArguments.Contains("INSTALL");
-            config.CheckOutFlag = framework.Arguments.BaseArguments.Contains("OUT");
-            config.CheckInFlag = framework.Arguments.BaseArguments.Contains("IN");
-            config.ForceFlag = framework.Arguments.BaseArguments.Contains("FORCE");
-            config.CopyLibraryFlag = framework.Arguments.BaseArguments.Contains("LIBRARY");
-
-            if (config.CheckOutFlag && config.TokenTarget == null)
+            if (framework.Arguments.OverrideArguments.ContainsKey("APPBUILD"))
             {
-                throw new Exception("You need to provide a TOKEN-TARGET when checking out a token.");
+                config.AppBuild = framework.Arguments.OverrideArguments["APPBUILD"];
+                if (!File.Exists(config.AppBuild))
+                {
+                    throw new FileNotFoundException($"Unable to access {config.AppBuild}");
+                }
             }
-
-            if (config.CheckInFlag && config.TokenTarget == null)
+            if (string.IsNullOrEmpty(config.AppBuild))
             {
-                throw new Exception("You need to provide a TOKEN-TARGET when checking in a token.");
-            }
-
-            if (!config.InstallFlag && !config.CheckInFlag && !config.CheckOutFlag)
-            {
-                throw new Exception("You need to provide an action IN, OUT, or INSTALL action.");
+                throw new Exception("You need to provide an APPBUILD to utilizing the LAUNCH action.");
             }
 
             return config;
