@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics;
+using System.IO;
 using Greathorn.Core.Modules;
 using Greathorn.Core.Utils;
 
@@ -51,16 +52,7 @@ namespace Greathorn.Core
 
             if (settings.RequiresElevatedAccess && !ProcessUtil.IsElevated())
             {
-                string relaunchTarget;
-
-                if(Assembly.EntryAssembly != null)
-                {
-                    relaunchTarget = Assembly.EntryAssembly.Location;
-                }
-                else
-                {
-                    relaunchTarget = Assembly.ExecutingAssembly.Location;
-                }
+                string relaunchTarget = Assembly.EntryAssembly != null ? Assembly.EntryAssembly.Location : Assembly.ExecutingAssembly.Location;
                 Log.WriteLine($"Elevation REQUIRED: {relaunchTarget}", k_LogCategory, ILogOutput.LogType.Error);
                 if (Arguments.BaseArguments.Contains("elevation-check"))
                 {
@@ -101,6 +93,13 @@ namespace Greathorn.Core
                     Console.WriteLine("Unable to capture keystroke. Skipping.");
                 }
             }
+
+            // Return to original directory of launch
+            if (Environment.OriginalWorkingDirectory != null)
+            {
+                Directory.SetCurrentDirectory(Environment.OriginalWorkingDirectory);
+            }
+
             System.Environment.Exit(Environment.ExitCode);
 		}
 

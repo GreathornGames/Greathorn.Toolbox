@@ -34,8 +34,10 @@ namespace SteamToken
         {
             SteamTokenConfig config = new SteamTokenConfig();
 
+            // Should we force operations
             config.ForceFlag = framework.Arguments.BaseArguments.Contains("FORCE");
 
+            // Network Share Settings
             if (framework.Arguments.OverrideArguments.ContainsKey("NETWORK-USERNAME"))
             {
                 config.NetworkUsername = framework.Arguments.OverrideArguments["NETWORK-USERNAME"];
